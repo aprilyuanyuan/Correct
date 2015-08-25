@@ -16,12 +16,41 @@ namespace Correct
         string[] str = new string[] { };
         public string Name = "";
         public string Password = "";
-             
+
+
+        Dictionary<string, string> user = new Dictionary<string, string>();
 
         public User()
         {
             InitializeComponent();
-           
+
+
+            string line;
+            string address = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "UserName.txt");
+            FileInfo usernameFile = new FileInfo(address);
+            if (!usernameFile.Exists)
+            {
+                FileStream UserNameFile = new FileStream(address, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            }
+
+            StreamReader sr = new StreamReader(address);
+
+            while ((line = sr.ReadLine()) != null)
+            {
+                if (line.Equals("")) continue;
+                str = line.Split(',');
+                user.Add(str[0], str[1]);
+            }
+
+            sr.Close();
+
+            foreach (string name in user.Keys)
+            {
+                textBox1.Text = name;
+                textBox2.Text = user[name];
+                break;
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)//登陆
@@ -37,22 +66,8 @@ namespace Correct
                 return;
             }
           
-            Dictionary<string, string> user = new Dictionary<string, string>();
-            string line;
-            string address = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "UserName.txt"); 
-            FileInfo usernameFile = new FileInfo(address);
-            if (!usernameFile.Exists)
-            {
-                FileStream UserNameFile = new FileStream(address, FileMode.OpenOrCreate, FileAccess.ReadWrite); 
-            }
-           
-            StreamReader sr = new StreamReader(address);
-
-            while ((line = sr.ReadLine()) != null) {
-                if (line.Equals("")) continue;
-                str = line.Split(',');
-                user.Add(str[0],str[1]);
-            }
+       
+         
             
             if (user.Keys.Contains(textBox1.Text) && user[textBox1.Text] == textBox2.Text)
             {
@@ -70,7 +85,7 @@ namespace Correct
             {
                 MessageBox.Show("该用户名不存在！");
             }
-            sr.Close();
+       
         }
               
         private void button3_Click(object sender, EventArgs e)//注册
