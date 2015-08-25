@@ -151,8 +151,8 @@ namespace Correct
                            area.IsShowFoldFlag = false;
                            area.IsFold = false;
                            area.YAxes.Mode = YAxesMode.Manual;
-                           area.YAxes.YAxesMin = adMaxf;
-                           area.YAxes.YAxesMax = adMinf;
+                           area.YAxes.YAxesMin =adMinf ;
+                           area.YAxes.YAxesMax = adMaxf;
                            area.YAxes.Precision = 3;
                            area.YAxes.UnitString = "";
                         
