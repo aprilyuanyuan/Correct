@@ -19,6 +19,8 @@ namespace Correct
         List<ChartGraph> listChart = new List<ChartGraph>();
 
         List<Thread> listThread = new List<Thread>();
+        List<bool> listEnable = new List<bool>();
+
         public FormWav()
         {
             InitializeComponent();
@@ -27,6 +29,10 @@ namespace Correct
             listChart.Add(chartGraph1);
             listChart.Add(chartGraph2);
             listChart.Add(chartGraph3);
+
+            listEnable.Add(true);
+            listEnable.Add(true);
+            listEnable.Add(true);
         }
 
 
@@ -112,6 +118,8 @@ namespace Correct
 
                    if (adData == null) continue;
 
+                   if (listEnable[channel] == false) continue;
+
                    int adMin = int.MaxValue;
                    int adMax = int.MinValue;
 
@@ -130,7 +138,7 @@ namespace Correct
 
                    float adMaxf = adMax + (adMax - adMin) * 0.2f;
 
-                   float adMinf = adMax - (adMax - adMin) * 0.2f;
+                   float adMinf = adMin - (adMax - adMin) * 0.2f;
 
                        this.Invoke((EventHandler)delegate
                        {
@@ -169,6 +177,9 @@ namespace Correct
                            grp.XAxes.SetOrgTime(ChartGraph.DateTime2ChartTime(timeNow), 0);
                            chart.AutoSetXScale();
 
+
+                           chart.Draw();
+
                        });
 
 
@@ -190,6 +201,21 @@ namespace Correct
             
 
 
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            listEnable[0] = !listEnable[0];
+        }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            listEnable[1] = !listEnable[1];
+        }
+
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            listEnable[2] = !listEnable[2];
         }
 
 
