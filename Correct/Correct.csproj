@@ -136,6 +136,12 @@
     <Compile Include="FormType.Designer.cs">
       <DependentUpon>FormType.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormWav.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormWav.Designer.cs">
+      <DependentUpon>FormWav.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameMonitor.cs" />
     <Compile Include="HalfFloat.cs" />
     <Compile Include="IRawDataShow.cs" />
@@ -160,6 +166,9 @@
     <EmbeddedResource Include="FormType.resx">
       <DependentUpon>FormType.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormWav.resx">
+      <DependentUpon>FormWav.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -215,6 +224,10 @@
     <ProjectReference Include="..\fftwlib\fftwlib.csproj">
       <Project>{BEA875B8-E28A-49C5-8E7E-6512DA65F7E1}</Project>
       <Name>fftwlib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UltraChart\UltraChart.csproj">
+      <Project>{69708DE3-17B0-4A3C-9AB2-D6D5F9C510FD}</Project>
+      <Name>UltraChart</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -48,6 +48,7 @@ namespace Correct
             {
                 textBox1.Text = name;
                 textBox2.Text = user[name];
+                button1.Focus();
                 break;
             }
 

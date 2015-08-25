@@ -107,6 +107,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.textBox9 = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
+            this.button8 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.advBandedGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -882,11 +883,23 @@
             this.label15.TabIndex = 150;
             this.label15.Text = "万用表值";
             // 
+            // button8
+            // 
+            this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button8.Location = new System.Drawing.Point(781, 328);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(146, 60);
+            this.button8.TabIndex = 151;
+            this.button8.Text = "原始波形";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1356, 606);
+            this.Controls.Add(this.button8);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.textBox9);
             this.Controls.Add(this.checkBox1);
@@ -1017,6 +1030,7 @@
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.TextBox textBox9;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button button8;
     }
 }
 

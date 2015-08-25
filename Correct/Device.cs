@@ -24,6 +24,8 @@ namespace Correct
         List<ChannelParam> listChannel = new List<ChannelParam>();
 
 
+        List<List<ADBlock>> listChannelBlock = new List<List<ADBlock>>();
+
 
 
         List<ADBlock> listBlock = new List<ADBlock>();
@@ -124,6 +126,25 @@ namespace Correct
         }
 
 
+
+        public void AddADBlock(int channel,ADBlock block)
+        {
+            lock (listChannelBlock)
+            {
+                List<ADBlock> list = listChannelBlock[channel];
+                list.Add(block);
+            }
+        }
+
+        public void RemoveADBlock(int channel, ADBlock block)
+        {
+            lock (listChannelBlock)
+            {
+                List<ADBlock> list = listChannelBlock[channel];
+                list.Remove(block);
+            }
+        }
+
         public Device()
         {
             frequency = new List<float>();
@@ -137,6 +158,11 @@ namespace Correct
             {
                 listChannel.Add(new ChannelParam());
             }
+
+
+            listChannelBlock.Add(new List<ADBlock>());
+            listChannelBlock.Add(new List<ADBlock>());
+            listChannelBlock.Add(new List<ADBlock>());
 
            threadRequest = new Thread(new ThreadStart(ProcessRequest));
             threadRequest.IsBackground = true;
@@ -580,6 +606,19 @@ namespace Correct
                                                }
                                                Int16[] adArray=listAd.ToArray();
                                                listBlock[channel].PutAdData(adArray, 0, adArray.Length);
+
+                                             
+
+                                               lock (listChannelBlock)
+                                               {
+                                                   List<ADBlock> listBB = listChannelBlock[channel];
+                                                   foreach (ADBlock block in listBB)
+                                                   {
+                                                       block.PutAdData(adArray, 0, adArray.Length);
+                                                   }
+
+                                               }
+
 
                                            }
 
