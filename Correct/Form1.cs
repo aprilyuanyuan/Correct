@@ -1812,34 +1812,43 @@ namespace Correct
                 }
                 
                
-                if (param.CalcList.Count > 0)
+                 if (param.CalcList.Count > 0)
                 {
                     for (int h = 0; h < param.CalcList.Count; h++)
                     {                      
                         channelparam.AddCalcItem(param.CalcList[h]);
                     }
+
+                    bool addNewParam = false;
+
                     for (int i = 0; i < listDataSource.Count; i++)
                     {
-                        int num = 0;
+                        addNewParam = true;
+
                         for (int m = 0; m < param.CalcList.Count; m++)
                         {
                             if (listDataSource[i].Frequency == channelparam.CalcList[m].Freq && listDataSource[i].Gear == channelparam.CalcList[m].Gear)
                             {
                                 CalcItem item = new CalcItem(listDataSource[i].Frequency, listDataSource[i].Gear, listDataSource[i].CalibrationParameter, listDataSource[i].Offset);
                                 channelparam.ReplaceCalcItem(m,item);
-                                //channelparam.CalcList[m] = item;
+                                addNewParam = false;
+
                                 break;
-                            }
-                            if (listDataSource[i].Frequency != param.CalcList[m].Freq || listDataSource[i].Gear != param.CalcList[m].Gear)
-                            {
-                                num++;
-                                if (num == channelparam.CalcList.Count)
-                                {
-                                    CalcItem item = new CalcItem(listDataSource[i].Frequency, listDataSource[i].Gear, listDataSource[i].CalibrationParameter, listDataSource[i].Offset);
-                                    channelparam.AddCalcItem(item);
-                                    break;
-                                }
-                            }
+                            }                          
+                        }
+                        if (addNewParam)
+                        {
+
+
+
+
+
+
+                            CalcItem item = new CalcItem(listDataSource[i].Frequency, listDataSource[i].Gear, listDataSource[i].CalibrationParameter, listDataSource[i].Offset);
+                            channelparam.AddCalcItem(item);
+
+
+
                         }
                     }
                 }
@@ -2047,8 +2056,9 @@ namespace Correct
                     channelparam.Time = DateTime.Now;
                     channelparam.Person = user.Name;
                     using (FileStream fs = new FileStream(ofd.FileName, FileMode.Open))
-                    using (StreamReader sr = new StreamReader(fs))
-                    {
+					using (StreamReader sr = new StreamReader(fs))
+                    {                     
+
 
                         while (true)
                         {
@@ -2057,11 +2067,18 @@ namespace Correct
                            {
                                break;
                            }
+                           CalcItem calitem = new CalcItem(line);
+                           channelparam.AddCalcItem(calitem);                        
+                         
+                           Record record = new Record((short)calitem.Freq, calitem.Gear, 0, 0, calitem.CoeffK, calitem.CoeffB, 0);
+                           listDataSource.Add(record);
+                         
 
 
-                           channelparam.AddCalcItem(new CalcItem(line));
+
 
                         }
+                        InitGrid(); 
 
                     }
 
