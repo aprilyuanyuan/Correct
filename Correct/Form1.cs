@@ -321,9 +321,19 @@ namespace Correct
             for (int i = 0; i < portnames.Length;i++)
             {
                 toolStripComboBox1.Items.Add(portnames[i]);  //获取系统所有串口信息函数。
-                toolStripComboBox1.Text = "COM21";
+           
                 toolStripComboBox4.Items.Add(portnames[i]);
-                toolStripComboBox4.Text = "COM5";                
+                      
+            }
+
+            if (toolStripComboBox1.Items.Count > 0)
+            {
+                toolStripComboBox1.SelectedIndex = 0;
+            }
+
+            if (toolStripComboBox4.Items.Count > 0)
+            {
+                toolStripComboBox4.SelectedIndex = 0;
             }
             
             toolStripComboBox2.Items.AddRange(new string[] { "9600", "19200", "38400", "57600", "115200", "576000" });

@@ -39,16 +39,17 @@ namespace Correct
           
             Dictionary<string, string> user = new Dictionary<string, string>();
             string line;
-            string address = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "\\UserName.txt";
+            string address = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "UserName.txt"); 
             FileInfo usernameFile = new FileInfo(address);
             if (!usernameFile.Exists)
             {
-                FileStream UserNameFile = new FileStream(address, FileMode.OpenOrCreate);              
+                FileStream UserNameFile = new FileStream(address, FileMode.OpenOrCreate, FileAccess.ReadWrite); 
             }
            
             StreamReader sr = new StreamReader(address);
 
             while ((line = sr.ReadLine()) != null) {
+                if (line.Equals("")) continue;
                 str = line.Split(',');
                 user.Add(str[0],str[1]);
             }
