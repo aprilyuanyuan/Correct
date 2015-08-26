@@ -12,6 +12,7 @@
     <AssemblyName>Correct</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>AppMain.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -148,6 +149,7 @@
     <Compile Include="Meter.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NetDebugConsole.cs" />
+    <Compile Include="PACal.cs" />
     <Compile Include="PortDataDisplay.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -216,6 +218,7 @@
     <None Include="Resources\td.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AppMain.ico" />
     <Content Include="ChannelInfo.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

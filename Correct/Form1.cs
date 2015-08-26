@@ -62,6 +62,7 @@ namespace Correct
 
         DeviceInformation devSelfInfo = new DeviceInformation();
 
+        PACal paCal = null;
 
         public Form1()
         {
@@ -109,6 +110,17 @@ namespace Correct
             Thread threadSelfCheck = new Thread(new ThreadStart(SelfCheck));
             threadSelfCheck.IsBackground = true;
             threadSelfCheck.Start();
+
+            paCal = new PACal(sigSource, meter);
+
+            paCal.LoadCfg(Path.Combine(Application.StartupPath,"PACAL.txt"));
+        }
+
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            paCal.StoreCfg(Path.Combine(Application.StartupPath, "PACAL.txt"));
         }
 
         private void SelfCheck()
@@ -775,306 +787,281 @@ namespace Correct
                 deviceflag = sa.DeviceInfo;
                 InitGrid();
             });          
-            sigSource.SetState(true);           
+            sigSource.SetState(true);
 
-            for (int i = 0; i < count; i++)
-            {                           
-                var args = this.cmdList[i].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                Presentsigflag = args[0];
-                Int16 frequency = Convert.ToInt16(args[1]);
-                sigfreq = frequency;
-                if (Presentsigflag != Lastsigflag)
+
+
+
+
+
+            int mode = -1;
+
+                for (int i = 0; i < count; i++)
                 {
-                    if (Presentsigflag == "交流电压")
+                    var args = this.cmdList[i].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    Presentsigflag = args[0];
+                    Int16 frequency = Convert.ToInt16(args[1]);
+                    sigfreq = frequency;
+
+                    switch (Presentsigflag)
                     {
-                        Meter_AcVoltSet();
-                        Thread.Sleep(1000);
-                    }
-                    else if (Presentsigflag == "直流电压")
-                    {
-                       
-                        Meter_DcVoltSet();
-                        Thread.Sleep(1000);
-                    }
-                    else if (Presentsigflag == "交流电流")
-                    {
-                        Meter_AcCurrentSet();
-                        Thread.Sleep(1000);
-                    }
-                    else if (Presentsigflag == "直流电流")
-                    {
-                        
-                        Meter_DcCurrentSet();
-                        Thread.Sleep(1000);
+                        case "交流电流":
+                            if (mode != 0)
+                            {
+                                MessageBox.Show("快点改到【交流电流】测试模式!再点击我。不要提前点击！！");
+                                meter.SetAcCurrent();
+                                Thread.Sleep(10000);
+                            }
+                            mode = 0;
+                            paCal.StartCalACA();
+                            break;
+                        case "交流电压":
+                            if (mode != 1)
+                            {
+                                MessageBox.Show("快点改到【交流电压】测试模式!再点击我。不要提前点击！！");
+                                meter.SetAcVolt();
+
+                                Thread.Sleep(10000);
+                            }
+                            mode = 1;
+                            paCal.StartCalACV();
+                            break;
+
+                        case "直流电流":
+                            if (mode != 2)
+                            {
+                                sigSource.SetState(false);
+                                MessageBox.Show("快点改到【直流电流】测试模式!再点击我。不要提前点击！！");
+                                meter.SetDcCurrent();
+                                Thread.Sleep(10000);
+                            }
+                            mode = 2;
+                            paCal.StartCalDCA();
+                            break;
+                        case "直流电压":
+                            if (mode != 3)
+                            {
+                                sigSource.SetState(false);
+                                MessageBox.Show("快点改到【直流电压】测试模式!再点击我。不要提前点击！！");
+                                meter.SetDcVolt();
+                                Thread.Sleep(10000);
+                            }
+                            mode = 3;
+                            paCal.StartCalDCV();
+                            break;
                     }
 
-                    Lastsigflag = Presentsigflag;
-                    MessageBox.Show(Presentsigflag + "请注意功放输入，然后点击确定！", "提示");
-                }
-             
-               
-                byte gear = Convert.ToByte(args[2]);               
-                float ActualValue1 = ToFloat(args[3], float.NaN);
-                float Ad1 = ToFloat(args[4], float.NaN);
-                //float ActualValue2 = ToFloat(args[5], float.NaN);
-                //float Ad2 = ToFloat(args[6], float.NaN);
-                Int16 calibrationParameter = Convert.ToInt16(args[5]);
-                Int16 offset = Convert.ToInt16(args[6]);
-                float deviation = ToFloat(args[7], float.NaN);
+                 
 
-               
 
-                PresentGear = gear;
-                if (deviceflag == 7 && PresentGear != LastGear) //设置档位
-                {
-                    LastGear = PresentGear;
-                    DeviceRequest req = dev.SetSpan((byte)channelid, PresentGear, 2000);
-                    req.Callback += new EventHandler(req_Callback2);
-                    dev.SendRequest(req);                   
-                }
+                    byte gear = Convert.ToByte(args[2]);
+                    float ActualValue1 = ToFloat(args[3], float.NaN);
+                    float Ad1 = ToFloat(args[4], float.NaN);
+       
+                    Int16 calibrationParameter = Convert.ToInt16(args[5]);
+                    Int16 offset = Convert.ToInt16(args[6]);
+                    float deviation = ToFloat(args[7], float.NaN);
 
-               
-                if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
-                {
-                    sigSource.SetFreq(frequency);
-                    sigSource.SetAmpli(0.1f);
-                }
-                else if (Presentsigflag == "直流电流")
-                {
-                   sigSource.SetFreq(frequency);
-                    sigSource.SetAmpli(0.01f);
-                    //sigSource.CreateDC(0, 0.1f);
-                    sigSource.SetOffset(0, 0.1f);
-                }
-                Thread.Sleep(10000);               
-                Magnification = Meter.MeterReadingValue / 0.1f; //用于提醒用户调整功放的大小。
-                
 
-                while (9 * Magnification < ActualValue1)
-                {
-                    MessageBox.Show("请先调整功放的放大倍数,再点击确定！");
-                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
+
+                    PresentGear = gear;
+                    if (deviceflag == 7 && PresentGear != LastGear) //设置档位
                     {
-                        sigSource.SetFreq(frequency);
-                        sigSource.SetAmpli(0.1f);
+                        LastGear = PresentGear;
+                        DeviceRequest req = dev.SetSpan((byte)channelid, PresentGear, 2000);
+                        req.Callback += new EventHandler(req_Callback2);
+                        dev.SendRequest(req);
                     }
-                    else if (Presentsigflag == "直流电流")
+
+
+                    try
                     {
-                        sigSource.SetFreq(frequency);
-                        sigSource.SetAmpli(0.01f);
-                        //sigSource.CreateDC(0, 0.1f);
-                        sigSource.SetOffset(0, 0.1f);
-                    }
-                    Thread.Sleep(10000);
-                    Magnification = Meter.MeterReadingValue / 0.1f; //用于提醒用户调整功放的大小。              
-                }
-               
-                try
-                {                   
-                    Record record = new Record(frequency, gear,ActualValue1, Ad1,calibrationParameter, offset, deviation);                  
-                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
-                    {
-                        sigSource.SetFreq(frequency);
-                        sigSource.SetAmpli(ActualValue1 / Magnification);
-                    }
-                    else if (Presentsigflag == "直流电流")
-                    {
-                        sigSource.SetFreq(frequency);
-                        sigSource.SetAmpli(0.01f);
-                        //sigSource.CreateDC(0, 0.1f);
-                        sigSource.SetOffset(0, ActualValue1 / Magnification);
-                    }           
-                    Thread.Sleep(10000);
-                    if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                    {
-                        record.Frequency = 0;
-                    }
+                        Record record = new Record(frequency, gear, ActualValue1, Ad1, calibrationParameter, offset, deviation);
+                        if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                        {
+                            sigSource.SetState(false);
+
+                            //Thread.Sleep(5000);
+
+                            if (channelid == 0)
+                            {
+                                record.Offset = OffsetValue0;
+                                b = OffsetValue0;
+                            }
+                            else if (channelid == 1)
+                            {
+                                record.Offset = offsetValue1;
+                                b = offsetValue1;
+                            }
+                            else if (channelid == 2)
+                            {
+                                record.Offset = OffsetValue2;
+                                b = OffsetValue2;
+                            }
+                            //record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
+                            //b = -record.CalibrationParameter * b;
+                            //record.Offset = b;
+                            sigSource.SetState(true);
                   
-                    record.ActualValue1 = Meter.MeterReadingValue;
+                        }
 
-                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                    {
-                        if (channelid == 0)
+                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
                         {
-                            record.Ad1 = AdValue0;
+                            sigSource.SetFreq(frequency);
+                            sigSource.SetAmpli(paCal.CalInput(frequency,ActualValue1));
                         }
-                        else if (channelid == 1)
+                        else if (Presentsigflag == "直流电流")
                         {
-                            record.Ad1 = AdValue1;
+                            sigSource.SetFreq(frequency);
+                            sigSource.SetAmpli(0.01f);
+                            sigSource.SetOffset(0, paCal.CalInput(ActualValue1));
                         }
-                        else if (channelid == 2)
-                        {
-                            record.Ad1 = AdValue2;
-                        }
-                    }
-                    else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                    {
-                        if (channelid == 0)
-                        {
-                            record.Ad1 = OffsetValue0;
-                        }
-                        else if (channelid == 1)
-                        {
-                            record.Ad1 = offsetValue1;
-                        }
-                        else if (channelid == 2)
-                        {
-                            record.Ad1 = OffsetValue2;
-                        }
-                    }
 
-                    #region
-                    // if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
-                    //{
-                    //    sigSource.SetFreq(frequency);
-                    //    sigSource.SetAmpli(ActualValue2 / Magnification);
-                    //}
-                    //else if (Presentsigflag == "直流电流")
-                    //{
-                    //    sigSource.SetFreq(frequency);
-                    //    sigSource.SetAmpli(0.01f);
-                    //    //sigSource.CreateDC(0, 0.1f);
-                    //    sigSource.SetOffset(0, ActualValue2 / Magnification);
-                    //}                            
-                    //Thread.Sleep(10000);
-                    //record.ActualValue2 = Meter.MeterReadingValue;
+                        if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                        {
+                            record.Frequency = 0;
+                        }
 
-                    //if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                    //{
-                    //    if (channelid == 0)
-                    //    {
-                    //        record.Ad2 = AdValue0;
-                    //    }
-                    //    else if (channelid == 1)
-                    //    {
-                    //        record.Ad2 = AdValue1;
-                    //    }
-                    //    else if (channelid == 2)
-                    //    {
-                    //        record.Ad2 = AdValue2;
-                    //    }
-                    //}
-                    //else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                    //{
-                    //    if (channelid == 0)
-                    //    {
-                    //        record.Ad2 = OffsetValue0;
-                    //    }
-                    //    else if (channelid == 1)
-                    //    {
-                    //        record.Ad2 = offsetValue1;
-                    //    }
-                    //    else if (channelid == 2)
-                    //    {
-                    //        record.Ad2 = OffsetValue2;
-                    //    }
-                    //}
-                    #endregion
-                   
-                        //float CalibrationParametervalue1 = (record.ActualValue2 - record.ActualValue1) / (record.Ad2 - record.Ad1);
+                        Thread.Sleep(5000);
+                        record.ActualValue1 = Meter.MeterReadingValue;
+
+                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
+                        {
+                            if (channelid == 0)
+                            {
+                                record.Ad1 = AdValue0;
+                            }
+                            else if (channelid == 1)
+                            {
+                                record.Ad1 = AdValue1;
+                            }
+                            else if (channelid == 2)
+                            {
+                                record.Ad1 = AdValue2;
+                            }
+                        }
+                        else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                        {
+                            if (channelid == 0)
+                            {
+                                record.Ad1 = OffsetValue0;
+                            }
+                            else if (channelid == 1)
+                            {
+                                record.Ad1 = offsetValue1;
+                            }
+                            else if (channelid == 2)
+                            {
+                                record.Ad1 = OffsetValue2;
+                            }
+                        }
+
+
                         float CalibrationParametervalue1 = record.ActualValue1 / record.Ad1;
                         record.CalibrationParameter = CalibrationParametervalue1;
-                        //b = record.ActualValue2 - record.CalibrationParameter * record.Ad2;                    
-                        //record.Offset = b;
-                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                    {
-                        b = 0;
-                        record.Offset = 0;
-                    }
-                    else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                    {
-                        sigSource.SetState(false); 
-                        Thread.Sleep(15000);
+             
+                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
+                        {
+                            b = 0;
+                            record.Offset = 0;
+                        }
+                        else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                        {
+                            //sigSource.SetState(false);
 
-                        if (channelid == 0)
-                        {
-                            record.Offset = OffsetValue0;
-                            b = OffsetValue0;
+                            //Thread.Sleep(15000);
+
+                            //if (channelid == 0)
+                            //{
+                            //    record.Offset = OffsetValue0;
+                            //    b = OffsetValue0;
+                            //}
+                            //else if (channelid == 1)
+                            //{
+                            //    record.Offset = offsetValue1;
+                            //    b = offsetValue1;
+                            //}
+                            //else if (channelid == 2)
+                            //{
+                            //    record.Offset = OffsetValue2;
+                            //    b = OffsetValue2;
+                            //}
+                            record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
+                            b = -record.CalibrationParameter * b;
+                            record.Offset = b;                          
+                  
                         }
-                        else if (channelid == 1)
+
+
+                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
                         {
-                            record.Offset = offsetValue1;
-                            b = offsetValue1;
+                            sigSource.SetFreq(frequency);
+                            sigSource.SetAmpli(paCal.CalInput(frequency,ActualValue1 * 4 / 3));
                         }
-                        else if (channelid == 2)
+                        else if (Presentsigflag == "直流电流")
                         {
-                            record.Offset = OffsetValue2;
-                            b = OffsetValue2;
+                            sigSource.SetFreq(frequency);
+                            sigSource.SetAmpli(0.01f);
+                            sigSource.SetOffset(0, paCal.CalInput(ActualValue1 * 4 / 3));
                         }
-                        record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
-                        b =  - record.CalibrationParameter * b;
-                        record.Offset = b;
-                        sigSource.SetState(true);
                         Thread.Sleep(5000);
-                        //b = Meter.MeterReadingValue;
-                        //record.Offset = Meter.MeterReadingValue; 
-                    }
-                   
 
-                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
-                    {
-                        sigSource.SetFreq(frequency);
-                        sigSource.SetAmpli((ActualValue1 * 2/3) / Magnification);
-                    }
-                    else if (Presentsigflag == "直流电流")
-                    {
-                        sigSource.SetFreq(frequency);
-                        sigSource.SetAmpli(0.01f);
-                        //sigSource.CreateDC(0, 0.1f);
-                        sigSource.SetOffset(0, ((ActualValue1 * 2) / 3) / Magnification);
-                    }              
-                    Thread.Sleep(10000);
+                        float x = Meter.MeterReadingValue;
 
-                    float x = Meter.MeterReadingValue;                  
+                        float z = 0;
+                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
+                        {
+                            if (channelid == 0)
+                            {
+                                z = AdValue0;
+                            }
+                            else if (channelid == 1)
+                            {
+                                z = AdValue1;
+                            }
+                            else if (channelid == 2)
+                            {
+                                z = AdValue2;
+                            }
+                        }
+                        else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                        {
+                            if (channelid == 0)
+                            {
+                                z = OffsetValue0;
+                            }
+                            else if (channelid == 1)
+                            {
+                                z = offsetValue1;
+                            }
+                            else if (channelid == 2)
+                            {
+                                z = OffsetValue2;
+                            }
+                        }
+                        float y = record.CalibrationParameter * z + b;
+                        float dy = Math.Abs(x - y);
+                        record.Deviation = dy * 100 / x;
 
-                    float z = 0;
-                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                    {
-                        if (channelid == 0)
+                        if (record.Deviation > 10)
                         {
-                            z = AdValue0;
+                            i--;
+                            continue;
                         }
-                        else if (channelid == 1)
-                        {
-                            z = AdValue1;
-                        }
-                        else if (channelid == 2)
-                        {
-                            z = AdValue2;
-                        }
+
+                        listDataSource.Add(record);
+
                     }
-                    else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                    catch (Exception ex)
                     {
-                        if (channelid == 0)
-                        {
-                            z = OffsetValue0;
-                        }
-                        else if (channelid == 1)
-                        {
-                            z = offsetValue1;
-                        }
-                        else if (channelid == 2)
-                        {
-                            z = OffsetValue2;
-                        }
+                        NetDebugConsole.WriteLine(ex.ToString());
                     }
-                    float y = record.CalibrationParameter * z + b;
-                    float dy = Math.Abs(x - y);
-                    record.Deviation = dy * 100 / x;                   
-                    
-                    listDataSource.Add(record);
-                                                          
+                    this.Invoke((EventHandler)delegate
+                    {
+                        InitGrid();
+                    });
+
                 }
-                catch (Exception ex)
-                {
-                    NetDebugConsole.WriteLine(ex.ToString());
-                }
-                this.Invoke((EventHandler)delegate
-                {
-                    InitGrid();                  
-                });
-
-            }
             this.Invoke((EventHandler)delegate
             {                
                 label5.Text = "";
@@ -1337,6 +1324,7 @@ namespace Correct
                        if (channelparamvalue.CalcList.Count != 0)
                        {
                            amplvalue0 = (amplArray0.Sum() * channelparamvalue.CalcList[freqnumber0].CoeffK +  channelparamvalue.CalcList[freqnumber0].CoeffB) / 1;
+                          
                            if (checkBox5.Checked)
                            {
                                amplshow0 = Math.Abs(Meter.MeterReadingValue - amplvalue0) / AC;

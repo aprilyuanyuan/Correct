@@ -36,6 +36,14 @@ namespace Correct
            
         }
 
+
+        public void SetFreq(float frequency, bool single)
+        {
+         
+             dev.SetFreq(0, frequency);
+             dev.SetFmMode(0, false, 0, 0);
+        }
+
         public bool SetFreq(float frequency)
         {
 
