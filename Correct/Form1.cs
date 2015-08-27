@@ -763,6 +763,8 @@ namespace Correct
 
         public void Start()
         {
+
+            DateTime timeStart = DateTime.Now;
             float Magnification = -1;
             byte LastGear = 4;
             byte PresentGear = 0;
@@ -828,24 +830,28 @@ namespace Correct
                             break;
 
                         case "直流电流":
+                            sigSource.SetState(false);
                             if (mode != 2)
                             {
-                                sigSource.SetState(false);
+                               
                                 MessageBox.Show("快点改到【直流电流】测试模式!再点击我。不要提前点击！！");
                                 meter.SetDcCurrent();
-                                Thread.Sleep(10000);
+                              
                             }
+                            Thread.Sleep(15000);
                             mode = 2;
                             paCal.StartCalDCA();
                             break;
                         case "直流电压":
+                            sigSource.SetState(false);
                             if (mode != 3)
                             {
-                                sigSource.SetState(false);
+                                
                                 MessageBox.Show("快点改到【直流电压】测试模式!再点击我。不要提前点击！！");
                                 meter.SetDcVolt();
-                                Thread.Sleep(10000);
+                             
                             }
+                            Thread.Sleep(15000);
                             mode = 3;
                             paCal.StartCalDCV();
                             break;
@@ -967,25 +973,7 @@ namespace Correct
                         }
                         else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
                         {
-                            //sigSource.SetState(false);
-
-                            //Thread.Sleep(15000);
-
-                            //if (channelid == 0)
-                            //{
-                            //    record.Offset = OffsetValue0;
-                            //    b = OffsetValue0;
-                            //}
-                            //else if (channelid == 1)
-                            //{
-                            //    record.Offset = offsetValue1;
-                            //    b = offsetValue1;
-                            //}
-                            //else if (channelid == 2)
-                            //{
-                            //    record.Offset = OffsetValue2;
-                            //    b = OffsetValue2;
-                            //}
+                          
                             record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
                             b = -record.CalibrationParameter * b;
                             record.Offset = b;                          
@@ -1068,7 +1056,12 @@ namespace Correct
                 this.button12.Text = "运行脚本";
             });
            
-            IsRunning = false;          
+            IsRunning = false;
+
+            DateTime timeStop = DateTime.Now;
+
+
+            MessageBox.Show("校准完成!所需时间(Min):"+(timeStop-timeStart).TotalMinutes);
         }
              
         public static float ToFloat(string val, float defVal)
@@ -1826,17 +1819,8 @@ namespace Correct
                         }
                         if (addNewParam)
                         {
-
-
-
-
-
-
                             CalcItem item = new CalcItem(listDataSource[i].Frequency, listDataSource[i].Gear, listDataSource[i].CalibrationParameter, listDataSource[i].Offset);
                             channelparam.AddCalcItem(item);
-
-
-
                         }
                     }
                 }

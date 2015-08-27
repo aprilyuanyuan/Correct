@@ -199,11 +199,11 @@ namespace Correct
             for (int i = 0; i <5 ; i++)
             {
                 float ampl = (i + 1);
-                sigSource.SetOffset(1,ampl);
+                sigSource.SetOffset(0,ampl);
 
                 Thread.Sleep(5000);
                 float meteVal = Meter.MeterReadingValue;
-                listItemDCA.Add(new CalItem(1000,ampl, meteVal));
+                listItemDCA.Add(new CalItem(0,ampl, meteVal));
             }
 
             listItemDCA.Sort();

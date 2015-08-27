@@ -222,6 +222,7 @@
     <Content Include="ChannelInfo.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="PACAL.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\fftwlib\fftwlib.csproj">
