@@ -830,7 +830,7 @@ namespace Correct
                             break;
 
                         case "直流电流":
-                            sigSource.SetState(false);
+                            //sigSource.SetState(false);
                             if (mode != 2)
                             {
                                
@@ -838,12 +838,12 @@ namespace Correct
                                 meter.SetDcCurrent();
                               
                             }
-                            Thread.Sleep(15000);
+                            //Thread.Sleep(15000);
                             mode = 2;
                             paCal.StartCalDCA();
                             break;
                         case "直流电压":
-                            sigSource.SetState(false);
+                            //sigSource.SetState(false);
                             if (mode != 3)
                             {
                                 
@@ -851,7 +851,7 @@ namespace Correct
                                 meter.SetDcVolt();
                              
                             }
-                            Thread.Sleep(15000);
+                            //Thread.Sleep(15000);
                             mode = 3;
                             paCal.StartCalDCV();
                             break;
@@ -887,7 +887,7 @@ namespace Correct
                         {
                             sigSource.SetState(false);
 
-                            //Thread.Sleep(5000);
+                            Thread.Sleep(15000);
 
                             if (channelid == 0)
                             {
