@@ -558,14 +558,15 @@ namespace Correct
                 bw.Write((byte)(devinfo2.ProductionDate.Year - 2000));
                 bw.Write((byte)(devinfo2.ProductionDate.Month));
                 bw.Write((byte)(devinfo2.ProductionDate.Day));
-                try
+                if (devinfo2.ProductionSequence == null)
+                {
+                    bw.Write((byte)0);
+                }
+                else
                 {
                     bw.Write((byte)devinfo2.ProductionSequence.Length);
                     bw.Write(Encoding.Default.GetBytes(devinfo2.ProductionSequence));
-                }
-                catch
-                { 
-                }
+                }               
             }
 
             DeviceType = sa.DeviceType;
