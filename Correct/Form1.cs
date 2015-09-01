@@ -23,29 +23,29 @@ using System.Diagnostics;
 namespace Correct
 {
     //public delegate void gridView_EndSorting(object sender, EventArgs e);
-    public partial class Form1 : Form,IRawDataShow
-    {     
-        public const int AckTimeOut=3000;
+    public partial class Form1 : Form, IRawDataShow
+    {
+        public const int AckTimeOut = 3000;
         Device dev = new Device();
-        Thread threadReadMeter = null;     
-        User user = new User(); 
+        Thread threadReadMeter = null;
+        User user = new User();
         public static Meter meter = new Meter();
         public byte DeviceFlag;
         public string DeviceType;
-        public DateTime Operationtime= DateTime.Now;       
-     
-        public DateTime ProductionData = new DateTime(2015,6,20);
+        public DateTime Operationtime = DateTime.Now;
+
+        public DateTime ProductionData = new DateTime(2015, 6, 20);
         public Int16 SequenceofProducton = 01;
-      
+
         delegate void DelegateShowText(Control ctl, string str);
         public List<float> FrequencyList = new List<float>();
-        public List<Record> listDataSource = new List<Record>();        
+        public List<Record> listDataSource = new List<Record>();
         public Dictionary<int, Record> dic = new Dictionary<int, Record>();
         public double[] Result = new double[3];
-    
+
         DeviceInformation devinfo = new DeviceInformation();
         ChannelInformation ChannelInfo = new ChannelInformation();
-        public bool IsRunning = false;      
+        public bool IsRunning = false;
         Thread _runThread;
         AutoResetEvent FrameCalc = new AutoResetEvent(false);
         CodeSend3022 sigSource = new CodeSend3022();
@@ -68,20 +68,6 @@ namespace Correct
         {
             user.ShowDialog();
 
-            //int[] FrequencyArray = { 25, 50, 100, 200, 550, 650, 750, 850, 1700, 2000, 2300, 2600 };
-           // int freq = Array.IndexOf(FrequencyArray, 1700);
-           // byte freqval = (byte)freq;
-           // byte zz = (byte)(freqval << 4);
-           // byte gearval = 3;
-           //byte xx = (byte)(zz + gearval);
-
-
-            //byte freqindex = (byte)((byte)131 >> 4);
-            //byte gearval = (byte)((byte)131 & 0x0F);
-            //int xx = FrequencyArray[freqindex];
-            //int yy = gearval;
-
-
             InitializeComponent();
 
 
@@ -103,7 +89,7 @@ namespace Correct
 
             Thread threadDealData2 = new Thread(new ThreadStart(DealData2));
             threadDealData2.IsBackground = true;
-            threadDealData2.Start();           
+            threadDealData2.Start();
 
             ChannelInfo.InitChannelFlag();
 
@@ -113,7 +99,7 @@ namespace Correct
 
             paCal = new PACal(sigSource, meter);
 
-            paCal.LoadCfg(Path.Combine(Application.StartupPath,"PACAL.txt"));
+            paCal.LoadCfg(Path.Combine(Application.StartupPath, "PACAL.txt"));
         }
 
 
@@ -125,14 +111,15 @@ namespace Correct
 
         private void SelfCheck()
         {
-            try {
+            try
+            {
 
                 while (true)
                 {
                     if (devSelfInfo.IsValid) break;
 
                     DeviceRequest req = dev.ReadDeviceInformation(2500);
-                    
+
                     dev.SendRequest(req);
                     if (req.WaitResponse(2500))
                     {
@@ -156,10 +143,10 @@ namespace Correct
 
 
                             MemoryStream ms = new MemoryStream();
-                            BinaryWriter bw = new BinaryWriter(ms);                        
-                       
-                            bw.Write((byte)(devIndex+1));
-                            
+                            BinaryWriter bw = new BinaryWriter(ms);
+
+                            bw.Write((byte)(devIndex + 1));
+
                             byte[] name = new byte[8];
                             byte[] tmp = Encoding.Default.GetBytes(user.Name);
                             if (tmp.Length > 8)
@@ -176,19 +163,20 @@ namespace Correct
                             bw.Write((byte)Operationtime.Day);
 
                             DeviceRequest req1 = dev.WriteDeviceInformation(ms.ToArray(), 2000);
-                   
+
                             dev.SendRequest(req1);
 
 
                         }
                         else
                         {
-                            this.Invoke((EventHandler)delegate {
+                            this.Invoke((EventHandler)delegate
+                            {
                                 toolStripComboBox6.SelectedIndex = devSelfInfo.DevIndex;
                                 toolStripComboBox6.Visible = true;
                                 toolStripLabel7.Visible = true;
                             });
-                          
+
                             break;
                         }
                     }
@@ -197,9 +185,9 @@ namespace Correct
             }
             catch (Exception)
             {
- 
+
             }
-            
+
         }
 
         public static int BCD2Int(byte bcd)
@@ -210,7 +198,7 @@ namespace Correct
             if (low > 9) return -1;
             return high * 10 + low;
         }
-   
+
         private void InitGrid()
         {
             // advBandedGridView1是表格上的默认视图，注意这里声明的是：BandedGridView
@@ -233,11 +221,11 @@ namespace Correct
             view.OptionsSelection.EnableAppearanceFocusedCell = true;           //???
             view.OptionsBehavior.Editable = true;                               //是否允许用户编辑单元格
             view.Appearance.FocusedRow.BackColor = Color.DarkOrange;
-           
+
 
             GridBand bandID = view.Bands.AddBand("ID");
             bandID.Visible = false; //隐藏ID列
-           
+
             GridBand bandFrequency = view.Bands.AddBand("频点");
             GridBand bandGear = view.Bands.AddBand("档位");
             GridBand band0XActualValue1 = view.Bands.AddBand("实际值1");
@@ -252,7 +240,7 @@ namespace Correct
             gridControl1.DataSource = listDataSource;
             gridControl1.MainView.PopulateColumns();
 
-            #region           
+            #region
             view.Columns["Frequency"].OwnerBand = bandFrequency;
             view.Columns["Gear"].OwnerBand = bandGear;
             view.Columns["ActualValue1"].OwnerBand = band0XActualValue1;
@@ -261,12 +249,12 @@ namespace Correct
             //view.Columns["Ad2"].OwnerBand = band0XADValue2;
             view.Columns["CalibrationParameter"].OwnerBand = bandCalibrationParameter;
             view.Columns["Offset"].OwnerBand = bandOffsetValue;
-            view.Columns["Deviation"].OwnerBand = bandDeviValue; 
-           
+            view.Columns["Deviation"].OwnerBand = bandDeviValue;
+
             view.Columns["Frequency"].OptionsColumn.AllowEdit = false;
             view.Columns["Frequency"].UnboundType = DevExpress.Data.UnboundColumnType.Integer;
             view.Columns["Frequency"].AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
-            
+
             view.Columns["Gear"].OptionsColumn.AllowEdit = false;
             view.Columns["Gear"].UnboundType = DevExpress.Data.UnboundColumnType.Integer;
             view.Columns["Gear"].AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
@@ -291,7 +279,7 @@ namespace Correct
             view.Columns["CalibrationParameter"].OptionsColumn.AllowEdit = false;
             view.Columns["CalibrationParameter"].UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
             view.Columns["CalibrationParameter"].AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
-            
+
 
             view.Columns["Offset"].OptionsColumn.AllowEdit = false;
             view.Columns["Offset"].UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
@@ -307,7 +295,7 @@ namespace Correct
 
             view.EndDataUpdate();//结束数据的编辑
             view.EndUpdate();   //结束视图的编辑
-            view.OptionsBehavior.AutoSelectAllInEditor = true;                    
+            view.OptionsBehavior.AutoSelectAllInEditor = true;
 
         }
 
@@ -318,24 +306,24 @@ namespace Correct
             listDataSource = new List<Record>();
             //InitGrid();            
 
-            List<SampleInterface> sampleInterfaces = SampleInterface.ReadFormXml(path +"ChannelInfo.xml");
+            List<SampleInterface> sampleInterfaces = SampleInterface.ReadFormXml(path + "ChannelInfo.xml");
             foreach (var module in sampleInterfaces)
             {
-                this.toolStripComboBox6.Items.Add(module);                 
+                this.toolStripComboBox6.Items.Add(module);
             }
             toolStripComboBox6.SelectedItem = sampleInterfaces[0];
-        }        
+        }
 
         private void ComboBoxMethod()
         {
             string[] portnames = SerialPort.GetPortNames();
-            string[] geararray = { "0","1","2","3"};
-            for (int i = 0; i < portnames.Length;i++)
+            string[] geararray = { "0", "1", "2", "3" };
+            for (int i = 0; i < portnames.Length; i++)
             {
                 toolStripComboBox1.Items.Add(portnames[i]);  //获取系统所有串口信息函数。
-           
+
                 toolStripComboBox4.Items.Add(portnames[i]);
-                      
+
             }
 
             if (toolStripComboBox1.Items.Count > 0)
@@ -347,14 +335,14 @@ namespace Correct
             {
                 toolStripComboBox4.SelectedIndex = 0;
             }
-            
+
             toolStripComboBox2.Items.AddRange(new string[] { "9600", "19200", "38400", "57600", "115200", "576000" });
             toolStripComboBox2.Text = "576000";
 
             comboBox1.Items.AddRange(new string[] { "0", "1", "2" });
             comboBox1.Text = "0";
-           
-           
+
+
             comboBox3.Items.Add("0");
             comboBox3.Items.Add("1");
             comboBox3.Items.Add("2");
@@ -363,14 +351,14 @@ namespace Correct
             comboBox3.Text = "0";
             comboBox2.Items.Add("打开");
             comboBox2.Items.Add("关闭");
-            comboBox2.Text = "打开";   
+            comboBox2.Text = "打开";
             textBox7.Text = "25";
             textBox3.Text = "0";
-           
+
         }
 
 
-       
+
 
         private void btnOpenMeter_Click_1(object sender, EventArgs e)
         {
@@ -389,7 +377,7 @@ namespace Correct
                     btnOpenMeter.ToolTipText = "关闭串口";
                     toolStripComboBox4.Enabled = false;
                     meter.PortName = toolStripComboBox4.Text;
-                    meter.Run();               
+                    meter.Run();
                 }
                 else
                 {
@@ -412,11 +400,11 @@ namespace Correct
 
         private void ProcReadMeterVal()
         {
-           
+
         }
 
         public float GetValue()
-        {           
+        {
             return dev.Ampli;
         }
 
@@ -442,8 +430,8 @@ namespace Correct
             }
             //base.OnFormClosing(e);           
         }
-       
-             
+
+
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
@@ -465,20 +453,20 @@ namespace Correct
                     toolScripButton1.Text = "关闭串口";
                     toolScripButton1.ToolTipText = "关闭串口";
                     toolStripComboBox1.Enabled = false;
-                    toolStripComboBox2.Enabled = false;                                    
+                    toolStripComboBox2.Enabled = false;
                 }
                 else
                 {
                     //m_portDispl.InitSerialPort(PortName,baud);
                     //m_portDispl.DisconnectDeveice();
                     dev.ClosePort();
-                  
+
                     toolScripButton1.Text = "打开串口";
                     toolScripButton1.ToolTipText = "打开串口";
                     toolStripComboBox1.Enabled = true;
-                    toolStripComboBox2.Enabled = true;               
+                    toolStripComboBox2.Enabled = true;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -495,7 +483,7 @@ namespace Correct
         {
             meter.SetDcVolt();
         }
-      
+
         public void ShowText(Control ctl, string str)
         {
             if (this.InvokeRequired)
@@ -521,11 +509,11 @@ namespace Correct
 
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms);
-            if(sa == null)
+            if (sa == null)
             {
-                return;               
-            }           
-            
+                return;
+            }
+
             DeviceFlag = sa.DeviceInfo;
             bw.Write(DeviceFlag);
             bw.Write((byte)(Operationtime.Year - 2000));
@@ -533,11 +521,11 @@ namespace Correct
             bw.Write((byte)(Operationtime.Day));
             bw.Write((byte)0);
             bw.Write((byte)0);
-           
+
 
             byte[] name = new byte[8];
             byte[] tmp = Encoding.Default.GetBytes(user.Name);
-            if(tmp.Length > 8)
+            if (tmp.Length > 8)
             {
                 MessageBox.Show("用户名长度应小于4个汉字或者8个英文字母");
             }
@@ -546,15 +534,15 @@ namespace Correct
                 name[i] = tmp[i];
             }
             bw.Write(name);
-            bw.Write((byte)(Operationtime.Year-2000));
+            bw.Write((byte)(Operationtime.Year - 2000));
             bw.Write((byte)Operationtime.Month);
             bw.Write((byte)Operationtime.Day);
 
-            
+
             using (DeviceInfo devinfo2 = new DeviceInfo())
             {
                 devinfo2.ShowDialog();
-                
+
                 bw.Write((byte)(devinfo2.ProductionDate.Year - 2000));
                 bw.Write((byte)(devinfo2.ProductionDate.Month));
                 bw.Write((byte)(devinfo2.ProductionDate.Day));
@@ -566,20 +554,21 @@ namespace Correct
                 {
                     bw.Write((byte)devinfo2.ProductionSequence.Length);
                     bw.Write(Encoding.Default.GetBytes(devinfo2.ProductionSequence));
-                }               
+                }
+               
             }
 
             DeviceType = sa.DeviceType;
             byte[] devicetypearray = Encoding.Default.GetBytes(DeviceType);
             bw.Write((byte)devicetypearray.Length);
             bw.Write(devicetypearray);
-            
-           
+
+
             DeviceRequest req = dev.WriteDeviceInformation(ms.ToArray(), 2000);
             req.Callback += new EventHandler(req_Callback);
             dev.SendRequest(req);
-                                             
-        }       
+
+        }
 
         private void 设置时钟ToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -590,14 +579,14 @@ namespace Correct
 
         private void 读取当前时钟ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           DeviceRequest req= dev.GetTimeNow();
-           req.Callback += new EventHandler(req_ReadTime);
-           dev.SendRequest(req);
+            DeviceRequest req = dev.GetTimeNow();
+            req.Callback += new EventHandler(req_ReadTime);
+            dev.SendRequest(req);
         }
 
         void req_ReadTime(object sender, EventArgs e) //响应读取时钟
-        {            
-            DeviceRequest req=sender as DeviceRequest;
+        {
+            DeviceRequest req = sender as DeviceRequest;
             byte[] response = req.Response;
             if (response[6] == 0)
             {
@@ -622,7 +611,7 @@ namespace Correct
         {
             DeviceRequest req = sender as DeviceRequest;
             byte[] response = req.Response;
-            if(response[6] == 0)
+            if (response[6] == 0)
             {
                 MessageBox.Show("写入成功！");
             }
@@ -662,16 +651,16 @@ namespace Correct
             MessageBox.Show(deviceinformation);
 
         }
-       
+
         void req_ReadDeviceInformation(object sender, EventArgs e)
         {
             DeviceRequest req = sender as DeviceRequest;
             byte[] response = req.Response;
             string deviceinformation = devinfo.InitDeviceInformation(response);
             MessageBox.Show(deviceinformation);
-            
+
         }
-       
+
         void req_ReadSpan(object sender, EventArgs e)
         {
             DeviceRequest req = sender as DeviceRequest;
@@ -686,22 +675,22 @@ namespace Correct
             {
                 MessageBox.Show("读取量程失败!");
             }
- 
+
         }
         private void 读取上次设置时钟ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DeviceRequest req = dev.ReadLastTime();
-            req.Callback += new EventHandler(req_ReadTime);         
-            dev.SendRequest(req);           
+            req.Callback += new EventHandler(req_ReadTime);
+            dev.SendRequest(req);
         }
 
         private void 设置量程ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             byte channelid = Convert.ToByte(comboBox1.Text);
             byte gear = Convert.ToByte(comboBox3.Text);
-            DeviceRequest req = dev.SetSpan(channelid, gear,2000);
+            DeviceRequest req = dev.SetSpan(channelid, gear, 2000);
             req.Callback += new EventHandler(req_Callback);
-            dev.SendRequest(req);                       
+            dev.SendRequest(req);
         }
 
 
@@ -718,16 +707,16 @@ namespace Correct
             {
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Multiselect = false;
-              
-                
+
+
                 if (ofd.ShowDialog() != DialogResult.OK)
                 {
                     return;
-                }               
-                else 
+                }
+                else
                 {
                     string path = ofd.FileName;
-                    this.button12.Text = "停止脚本";                   
+                    this.button12.Text = "停止脚本";
                     String[] lines = File.ReadAllLines(path, Encoding.Default);
                     cmdList.Clear();
                     for (int i = 0; i < lines.Length; i++)
@@ -755,12 +744,12 @@ namespace Correct
                 _runThread.Abort();
                 this.button12.Text = "运行脚本";
                 label5.Text = "";
-            }          
-                    
+            }
+
         }
 
-      
-       
+
+
 
         public void Start()
         {
@@ -771,9 +760,9 @@ namespace Correct
             byte PresentGear = 0;
             string Lastsigflag = "";
             string Presentsigflag = "";
-           
-            float b = 0;            
-            
+
+            float b = 0;
+
             int channelid = 0;
             byte deviceflag = 0;
             listDataSource.Clear();
@@ -781,7 +770,7 @@ namespace Correct
             {
                 return;
             }
-         
+
             int count = this.cmdList.Count;
             this.Invoke((EventHandler)delegate
             {
@@ -789,282 +778,276 @@ namespace Correct
                 SampleInterface sa = toolStripComboBox6.SelectedItem as SampleInterface;
                 deviceflag = sa.DeviceInfo;
                 InitGrid();
-            });          
+            });
             sigSource.SetState(true);
-
-
-
-
 
 
             int mode = -1;
 
-                for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
+            {
+                var args = this.cmdList[i].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                Presentsigflag = args[0];
+                Int16 frequency = Convert.ToInt16(args[1]);
+                sigfreq = frequency;
+
+                switch (Presentsigflag)
                 {
-                    var args = this.cmdList[i].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                    Presentsigflag = args[0];
-                    Int16 frequency = Convert.ToInt16(args[1]);
-                    sigfreq = frequency;
+                    case "交流电流":
+                        if (mode != 0)
+                        {
+                            MessageBox.Show("快点改到【交流电流】测试模式!再点击我。不要提前点击！！");
+                            meter.SetAcCurrent();
+                            Thread.Sleep(10000);
+                        }
+                        mode = 0;
+                        paCal.StartCalACA();
+                        break;
+                    case "交流电压":
+                        if (mode != 1)
+                        {
+                            MessageBox.Show("快点改到【交流电压】测试模式!再点击我。不要提前点击！！");
+                            meter.SetAcVolt();
 
-                    switch (Presentsigflag)
+                            Thread.Sleep(10000);
+                        }
+                        mode = 1;
+                        paCal.StartCalACV();
+                        break;
+
+                    case "直流电流":
+                        //sigSource.SetState(false);
+                        if (mode != 2)
+                        {
+                            MessageBox.Show("快点改到【直流电流】测试模式!再点击我。不要提前点击！！");
+                            meter.SetDcCurrent();
+                        }
+                        //Thread.Sleep(15000);
+                        mode = 2;
+                        paCal.StartCalDCA();
+                        break;
+                    case "直流电压":
+                        //sigSource.SetState(false);
+                        if (mode != 3)
+                        {
+
+                            MessageBox.Show("快点改到【直流电压】测试模式!再点击我。不要提前点击！！");
+                            meter.SetDcVolt();
+
+                        }
+                        //Thread.Sleep(15000);
+                        mode = 3;
+                        paCal.StartCalDCV();
+                        break;
+                }
+
+
+
+
+                byte gear = Convert.ToByte(args[2]);
+                float ActualValue1 = ToFloat(args[3], float.NaN);
+                float Ad1 = ToFloat(args[4], float.NaN);
+
+                Int16 calibrationParameter = Convert.ToInt16(args[5]);
+                Int16 offset = Convert.ToInt16(args[6]);
+                float deviation = ToFloat(args[7], float.NaN);
+
+
+
+                PresentGear = gear;
+                if (deviceflag == 7 && PresentGear != LastGear) //设置档位
+                {
+                    LastGear = PresentGear;
+                    DeviceRequest req = dev.SetSpan((byte)channelid, PresentGear, 2000);
+                    req.Callback += new EventHandler(req_Callback2);
+                    dev.SendRequest(req);
+                }
+
+
+                try
+                {
+                    Record record = new Record(frequency, gear, ActualValue1, Ad1, calibrationParameter, offset, deviation);
+                    if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
                     {
-                        case "交流电流":
-                            if (mode != 0)
-                            {
-                                MessageBox.Show("快点改到【交流电流】测试模式!再点击我。不要提前点击！！");
-                                meter.SetAcCurrent();
-                                Thread.Sleep(10000);
-                            }
-                            mode = 0;
-                            paCal.StartCalACA();
-                            break;
-                        case "交流电压":
-                            if (mode != 1)
-                            {
-                                MessageBox.Show("快点改到【交流电压】测试模式!再点击我。不要提前点击！！");
-                                meter.SetAcVolt();
+                        sigSource.SetState(false);
 
-                                Thread.Sleep(10000);
-                            }
-                            mode = 1;
-                            paCal.StartCalACV();
-                            break;
+                        Thread.Sleep(15000);
 
-                        case "直流电流":
-                            //sigSource.SetState(false);
-                            if (mode != 2)
-                            {
-                               
-                                MessageBox.Show("快点改到【直流电流】测试模式!再点击我。不要提前点击！！");
-                                meter.SetDcCurrent();
-                              
-                            }
-                            //Thread.Sleep(15000);
-                            mode = 2;
-                            paCal.StartCalDCA();
-                            break;
-                        case "直流电压":
-                            //sigSource.SetState(false);
-                            if (mode != 3)
-                            {
-                                
-                                MessageBox.Show("快点改到【直流电压】测试模式!再点击我。不要提前点击！！");
-                                meter.SetDcVolt();
-                             
-                            }
-                            //Thread.Sleep(15000);
-                            mode = 3;
-                            paCal.StartCalDCV();
-                            break;
+                        if (channelid == 0)
+                        {
+                            record.Offset = OffsetValue0;
+                            b = OffsetValue0;
+                        }
+                        else if (channelid == 1)
+                        {
+                            record.Offset = offsetValue1;
+                            b = offsetValue1;
+                        }
+                        else if (channelid == 2)
+                        {
+                            record.Offset = OffsetValue2;
+                            b = OffsetValue2;
+                        }
+                        //record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
+                        //b = -record.CalibrationParameter * b;
+                        //record.Offset = b;
+                        sigSource.SetState(true);
+
                     }
 
-                 
-
-
-                    byte gear = Convert.ToByte(args[2]);
-                    float ActualValue1 = ToFloat(args[3], float.NaN);
-                    float Ad1 = ToFloat(args[4], float.NaN);
-       
-                    Int16 calibrationParameter = Convert.ToInt16(args[5]);
-                    Int16 offset = Convert.ToInt16(args[6]);
-                    float deviation = ToFloat(args[7], float.NaN);
-
-
-
-                    PresentGear = gear;
-                    if (deviceflag == 7 && PresentGear != LastGear) //设置档位
+                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
                     {
-                        LastGear = PresentGear;
-                        DeviceRequest req = dev.SetSpan((byte)channelid, PresentGear, 2000);
-                        req.Callback += new EventHandler(req_Callback2);
-                        dev.SendRequest(req);
+                        sigSource.SetFreq(frequency);
+                        sigSource.SetAmpli(paCal.CalInput(frequency, ActualValue1));
+                    }
+                    else if (Presentsigflag == "直流电流")
+                    {
+                        sigSource.SetFreq(frequency);
+                        sigSource.SetAmpli(0.01f);
+                        sigSource.SetOffset(0, paCal.CalInput(ActualValue1));
+                    }
+
+                    if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                    {
+                        record.Frequency = 0;
+                    }
+
+                    Thread.Sleep(5000);
+                    record.ActualValue1 = Meter.MeterReadingValue;
+
+                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
+                    {
+                        if (channelid == 0)
+                        {
+                            record.Ad1 = AdValue0;
+                        }
+                        else if (channelid == 1)
+                        {
+                            record.Ad1 = AdValue1;
+                        }
+                        else if (channelid == 2)
+                        {
+                            record.Ad1 = AdValue2;
+                        }
+                    }
+                    else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                    {
+                        if (channelid == 0)
+                        {
+                            record.Ad1 = OffsetValue0;
+                        }
+                        else if (channelid == 1)
+                        {
+                            record.Ad1 = offsetValue1;
+                        }
+                        else if (channelid == 2)
+                        {
+                            record.Ad1 = OffsetValue2;
+                        }
                     }
 
 
-                    try
+                    float CalibrationParametervalue1 = record.ActualValue1 / record.Ad1;
+                    record.CalibrationParameter = CalibrationParametervalue1;
+
+                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
                     {
-                        Record record = new Record(frequency, gear, ActualValue1, Ad1, calibrationParameter, offset, deviation);
-                        if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                        {
-                            sigSource.SetState(false);
+                        b = 0;
+                        record.Offset = 0;
+                    }
+                    else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                    {
 
-                            Thread.Sleep(15000);
-
-                            if (channelid == 0)
-                            {
-                                record.Offset = OffsetValue0;
-                                b = OffsetValue0;
-                            }
-                            else if (channelid == 1)
-                            {
-                                record.Offset = offsetValue1;
-                                b = offsetValue1;
-                            }
-                            else if (channelid == 2)
-                            {
-                                record.Offset = OffsetValue2;
-                                b = OffsetValue2;
-                            }
-                            //record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
-                            //b = -record.CalibrationParameter * b;
-                            //record.Offset = b;
-                            sigSource.SetState(true);
-                  
-                        }
-
-                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
-                        {
-                            sigSource.SetFreq(frequency);
-                            sigSource.SetAmpli(paCal.CalInput(frequency,ActualValue1));
-                        }
-                        else if (Presentsigflag == "直流电流")
-                        {
-                            sigSource.SetFreq(frequency);
-                            sigSource.SetAmpli(0.01f);
-                            sigSource.SetOffset(0, paCal.CalInput(ActualValue1));
-                        }
-
-                        if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                        {
-                            record.Frequency = 0;
-                        }
-
-                        Thread.Sleep(5000);
-                        record.ActualValue1 = Meter.MeterReadingValue;
-
-                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                        {
-                            if (channelid == 0)
-                            {
-                                record.Ad1 = AdValue0;
-                            }
-                            else if (channelid == 1)
-                            {
-                                record.Ad1 = AdValue1;
-                            }
-                            else if (channelid == 2)
-                            {
-                                record.Ad1 = AdValue2;
-                            }
-                        }
-                        else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                        {
-                            if (channelid == 0)
-                            {
-                                record.Ad1 = OffsetValue0;
-                            }
-                            else if (channelid == 1)
-                            {
-                                record.Ad1 = offsetValue1;
-                            }
-                            else if (channelid == 2)
-                            {
-                                record.Ad1 = OffsetValue2;
-                            }
-                        }
-
-
-                        float CalibrationParametervalue1 = record.ActualValue1 / record.Ad1;
-                        record.CalibrationParameter = CalibrationParametervalue1;
-             
-                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                        {
-                            b = 0;
-                            record.Offset = 0;
-                        }
-                        else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                        {
-                          
-                            record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
-                            b = -record.CalibrationParameter * b;
-                            record.Offset = b;                          
-                  
-                        }
-
-
-                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
-                        {
-                            sigSource.SetFreq(frequency);
-                            sigSource.SetAmpli(paCal.CalInput(frequency,ActualValue1 * 4 / 3));
-                        }
-                        else if (Presentsigflag == "直流电流")
-                        {
-                            sigSource.SetFreq(frequency);
-                            sigSource.SetAmpli(0.01f);
-                            sigSource.SetOffset(0, paCal.CalInput(ActualValue1 * 4 / 3));
-                        }
-                        Thread.Sleep(5000);
-
-                        float x = Meter.MeterReadingValue;
-
-                        float z = 0;
-                        if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
-                        {
-                            if (channelid == 0)
-                            {
-                                z = AdValue0;
-                            }
-                            else if (channelid == 1)
-                            {
-                                z = AdValue1;
-                            }
-                            else if (channelid == 2)
-                            {
-                                z = AdValue2;
-                            }
-                        }
-                        else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
-                        {
-                            if (channelid == 0)
-                            {
-                                z = OffsetValue0;
-                            }
-                            else if (channelid == 1)
-                            {
-                                z = offsetValue1;
-                            }
-                            else if (channelid == 2)
-                            {
-                                z = OffsetValue2;
-                            }
-                        }
-                        float y = record.CalibrationParameter * z + b;
-                        float dy = Math.Abs(x - y);
-                        record.Deviation = dy * 100 / x;
-
-                        if (record.Deviation > 10)
-                        {
-                            i--;
-                            continue;
-                        }
-
-                        listDataSource.Add(record);
+                        record.CalibrationParameter = record.ActualValue1 / (record.Ad1 - b);
+                        b = -record.CalibrationParameter * b;
+                        record.Offset = b;
 
                     }
-                    catch (Exception ex)
+
+
+                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流" || Presentsigflag == "直流电压")
                     {
-                        NetDebugConsole.WriteLine(ex.ToString());
+                        sigSource.SetFreq(frequency);
+                        sigSource.SetAmpli(paCal.CalInput(frequency, ActualValue1 * 4 / 3));
                     }
-                    this.Invoke((EventHandler)delegate
+                    else if (Presentsigflag == "直流电流")
                     {
-                        InitGrid();
-                    });
+                        sigSource.SetFreq(frequency);
+                        sigSource.SetAmpli(0.01f);
+                        sigSource.SetOffset(0, paCal.CalInput(ActualValue1 * 4 / 3));
+                    }
+                    Thread.Sleep(5000);
+
+                    float x = Meter.MeterReadingValue;
+
+                    float z = 0;
+                    if (Presentsigflag == "交流电压" || Presentsigflag == "交流电流")
+                    {
+                        if (channelid == 0)
+                        {
+                            z = AdValue0;
+                        }
+                        else if (channelid == 1)
+                        {
+                            z = AdValue1;
+                        }
+                        else if (channelid == 2)
+                        {
+                            z = AdValue2;
+                        }
+                    }
+                    else if (Presentsigflag == "直流电压" || Presentsigflag == "直流电流")
+                    {
+                        if (channelid == 0)
+                        {
+                            z = OffsetValue0;
+                        }
+                        else if (channelid == 1)
+                        {
+                            z = offsetValue1;
+                        }
+                        else if (channelid == 2)
+                        {
+                            z = OffsetValue2;
+                        }
+                    }
+                    float y = record.CalibrationParameter * z + b;
+                    float dy = Math.Abs(x - y);
+                    record.Deviation = dy * 100 / x;
+
+                    if (record.Deviation > 10)
+                    {
+                        i--;
+                        continue;
+                    }
+
+                    listDataSource.Add(record);
 
                 }
+                catch (Exception ex)
+                {
+                    NetDebugConsole.WriteLine(ex.ToString());
+                }
+                this.Invoke((EventHandler)delegate
+                {
+                    InitGrid();
+                });
+
+            }
             this.Invoke((EventHandler)delegate
-            {                
+            {
                 label5.Text = "";
                 this.button12.Text = "运行脚本";
             });
-           
+
             IsRunning = false;
 
             DateTime timeStop = DateTime.Now;
 
 
-            MessageBox.Show("校准完成!所需时间(Min):"+(timeStop-timeStart).TotalMinutes);
+            MessageBox.Show("校准完成!所需时间(Min):" + (timeStop - timeStart).TotalMinutes);
         }
-             
+
         public static float ToFloat(string val, float defVal)
         {
             if (val == "非数字")
@@ -1084,22 +1067,22 @@ namespace Correct
         private void toolStripButton1_Click_1(object sender, EventArgs e) // 读取通道信息
         {
             byte channeltype;
-            var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;          
+            var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
             byte channelid = Convert.ToByte(comboBox1.Text);
             DeviceRequest req = dev.ReadChannelInformation(channelid);
-          
+
             dev.SendRequest(req);
 
             if (req.WaitResponse(1000))
-            {                
+            {
                 byte[] response = req.Response;
                 if (mk.Channels.Count == 2 && channelid == 2)
                 {
-                    channeltype= mk.Channels[channelid - 1].channeltype.TypeID;
+                    channeltype = mk.Channels[channelid - 1].channeltype.TypeID;
                 }
                 else
                 {
-                   channeltype = mk.Channels[channelid].channeltype.TypeID;
+                    channeltype = mk.Channels[channelid].channeltype.TypeID;
                 }
                 if (channeltype >= 70)
                 {
@@ -1113,7 +1096,7 @@ namespace Correct
                 }
                 else
                 {
-                    ChannelParam param = new ChannelParam(response, 6,true);
+                    ChannelParam param = new ChannelParam(response, 6, true);
                     dev.UpdateChannelParam(param);
                     channelparamvalue = param;
                     FormCalParam form = new FormCalParam(param);
@@ -1121,8 +1104,8 @@ namespace Correct
                         form.Show();
                     }
                 }
-            }      
-      
+            }
+
         }
 
         private void 读取当前量程ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1136,26 +1119,27 @@ namespace Correct
 
         void ShowRawData()
         {
-            FrameMonitor monitor = dev.AddMonitor() ;
+            FrameMonitor monitor = dev.AddMonitor();
             while (true)
             {
-               SerialFrame sf= monitor.GetFrame(100);
-               
-               StringBuilder sb = new StringBuilder();
+                SerialFrame sf = monitor.GetFrame(100);
 
-               if (sf == null) continue;
+                StringBuilder sb = new StringBuilder();
 
-               if (sf.RawData[5] == 0x15)
-               {
-                   continue;
-               }
-               string txt=  sf.ToString();
+                if (sf == null) continue;
+
+                if (sf.RawData[5] == 0x15)
+                {
+                    continue;
+                }
+                string txt = sf.ToString();
 
 
-                this.Invoke(new MethodInvoker(delegate{
+                this.Invoke(new MethodInvoker(delegate
+                {
 
                     txtSerialRxData.AppendText(txt);
-                
+
                 }));
             }
         }
@@ -1163,16 +1147,16 @@ namespace Correct
 
         void ShowRawData2() //抓数据包
         {
-            if(!checkBox1.Checked)
+            if (!checkBox1.Checked)
             {
                 return;
             }
-            byte[] DataBuffer = new byte[]{};
+            byte[] DataBuffer = new byte[] { };
             byte[] ResultData = new byte[] { };
             Stopwatch sw = new Stopwatch();
             FrameMonitor monitor = dev.AddMonitor();
             int sumBytes = 0;
-            FileStream fs=null;
+            FileStream fs = null;
             while (true)
             {
                 SerialFrame sf = monitor.GetFrame(100);
@@ -1192,7 +1176,7 @@ namespace Correct
                     sw.Start();
                     sumBytes = adLength;
                     DateTime timeNow = DateTime.Now;
-                    string fileName = timeNow.Hour + "-" + timeNow.Minute + "-" + timeNow.Second+".bin";
+                    string fileName = timeNow.Hour + "-" + timeNow.Minute + "-" + timeNow.Second + ".bin";
                     fs = new FileStream(Path.Combine(Application.StartupPath, fileName), FileMode.OpenOrCreate);
 
                     for (int i = 11 + 1; i < sumBytes + 11; i += 2)
@@ -1216,7 +1200,7 @@ namespace Correct
                 }
 
                 long elapsedTm = sw.ElapsedMilliseconds;
-                
+
                 if (elapsedTm >= 60 * 1000)
                 {
                     Console.WriteLine(sumBytes * 1000f / elapsedTm / 2);
@@ -1236,7 +1220,7 @@ namespace Correct
 
             w0 = 0;
             w1 = 0;
-            w2 = 0;         
+            w2 = 0;
             xs = Convert.ToSingle(2 * Math.Cos(2 * Math.PI * f));
             for (i = 0; i < n; i++)
             {
@@ -1254,7 +1238,7 @@ namespace Correct
         float amplshow0;
         int freqnumber0;
         public void DealData0()
-        {       
+        {
             ADBlock adBlock = dev.GetADBlock(0); //通道0          
 
             while (true)
@@ -1263,116 +1247,116 @@ namespace Correct
                 byte channelid = 4;
                 float AC = 1f;
                 float DC = 1f;
-               Int16[] adData0 = adBlock.GetAdData(5000);            
+                Int16[] adData0 = adBlock.GetAdData(5000);
 
-               if (adData0 != null)
-               {                               
-                   float ampl0 = dsp2.CalAmpl(adData0, (int)sigfreq);
-                   OffsetValue0 = dsp2.CalAmpl(adData0, 0);
-                   AdValue0 = ampl0;
-                   if (checkBox5.Checked)
-                   {
-                       amplArray0.Add(ampl0);
-                       this.Invoke((EventHandler)delegate
-                       {
-                           gear = Convert.ToByte(textBox3.Text); 
-                           channelid = Convert.ToByte(comboBox1.Text);
-                           var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
-                          
-                           if(channelid == 0)
-                           {
-                               if (mk.Channels[channelid].channeltype.TypeID == 22 || mk.Channels[channelid].channeltype.TypeID == 31 || mk.Channels[channelid].channeltype.TypeID == 32 || mk.Channels[channelid].channeltype.TypeID == 52 || mk.Channels[channelid].channeltype.TypeID == 70 || mk.Channels[channelid].channeltype.TypeID == 71 || mk.Channels[channelid].channeltype.TypeID == 72)
-                               {
-                                   AC = (float)(Convert.ToInt32(mk.Channels[channelid].gears[gear].Name) / Math.Sqrt(2));
-                               }
-                               else
-                                   AC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);                           
-                           }                       
-                          
-                       }); 
-                   }
-                   else if (checkBox4.Checked)
-                   {
-                       amplArray0.Add(OffsetValue0);
-                       this.Invoke((EventHandler)delegate
-                       {
-                           gear = Convert.ToByte(textBox3.Text); 
-                           channelid = Convert.ToByte(comboBox1.Text);
-                           var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
-                           if(channelid == 0)
-                           {
-                               DC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
-                           }                          
-                       }); 
-                   }
-                   if (amplArray0.Count == 1 && channelid == 0)
-                   {                     
-                       for (int k = 0; k < channelparamvalue.CalcList.Count; k++)
-                       {
-                           if (channelparamvalue.CalcList[k].Freq == sigfreq && channelparamvalue.CalcList[k].Gear == gear)
-                           {
-                               freqnumber0 = k;
-                               break;
-                           }
-                       }
-                       if (channelparamvalue.CalcList.Count != 0)
-                       {
-                           amplvalue0 = (amplArray0.Sum() * channelparamvalue.CalcList[freqnumber0].CoeffK +  channelparamvalue.CalcList[freqnumber0].CoeffB) / 1;
-                          
-                           if (checkBox5.Checked)
-                           {
-                               amplshow0 = Math.Abs(Meter.MeterReadingValue - amplvalue0) / AC;
-                           }
-                           else if (checkBox4.Checked)
-                           {
-                               amplshow0 = Math.Abs(Meter.MeterReadingValue - amplvalue0) / DC;
-                           }
-                       }                  
-                       //amplArray0.Clear();
-                   }
-                   try
-                   {
-                       this.Invoke((EventHandler)delegate
-                       {
+                if (adData0 != null)
+                {
+                    float ampl0 = dsp2.CalAmpl(adData0, (int)sigfreq);
+                    OffsetValue0 = dsp2.CalAmpl(adData0, 0);
+                    AdValue0 = ampl0;
+                    if (checkBox5.Checked)
+                    {
+                        amplArray0.Add(ampl0);
+                        this.Invoke((EventHandler)delegate
+                        {
+                            gear = Convert.ToByte(textBox3.Text);
+                            channelid = Convert.ToByte(comboBox1.Text);
+                            var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
 
-                           float realAC = dev.CalRealVal(dev.GetGear(0),0, sigfreq, AdValue0);
-                           float realDC = dev.CalRealVal(dev.GetGear(0),0, 0, OffsetValue0);
+                            if (channelid == 0)
+                            {
+                                if (mk.Channels[channelid].channeltype.TypeID == 22 || mk.Channels[channelid].channeltype.TypeID == 31 || mk.Channels[channelid].channeltype.TypeID == 32 || mk.Channels[channelid].channeltype.TypeID == 52 || mk.Channels[channelid].channeltype.TypeID == 70 || mk.Channels[channelid].channeltype.TypeID == 71 || mk.Channels[channelid].channeltype.TypeID == 72)
+                                {
+                                    AC = (float)(Convert.ToInt32(mk.Channels[channelid].gears[gear].Name) / Math.Sqrt(2));
+                                }
+                                else
+                                    AC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
+                            }
 
-                           textBox1.Text = AdValue0.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
-                           textBox4.Text = OffsetValue0.ToString("0.000")+"\r\n"+realDC.ToString("0.000"); //直流
-                           if (comboBox1.Text == "0")
-                           {
-                               textBox10.Text = (100 * amplshow0).ToString("0.000") + "%";
-                               textBox3.Text = dev.GetGear(0).ToString();
-                               textBox9.Text = Meter.MeterReadingValue.ToString();
-                           }
-                       });
-                   }
-                   catch (Exception ex)
-                   {
-                   }
-                   finally
-                   {
-                       amplArray0.Clear();
-                   }
- 
-                   
-               }
-                 
-               else
-               {                   
-                   try
-                   {
-                       this.Invoke((EventHandler)delegate
-                       {
-                           textBox1.Text = "超时";
-                           textBox4.Text = "超时";                        
-                       });
-                   }
-                   catch(Exception ex)
-                   { 
-                   }
-               }
+                        });
+                    }
+                    else if (checkBox4.Checked)
+                    {
+                        amplArray0.Add(OffsetValue0);
+                        this.Invoke((EventHandler)delegate
+                        {
+                            gear = Convert.ToByte(textBox3.Text);
+                            channelid = Convert.ToByte(comboBox1.Text);
+                            var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
+                            if (channelid == 0)
+                            {
+                                DC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
+                            }
+                        });
+                    }
+                    if (amplArray0.Count == 1 && channelid == 0)
+                    {
+                        for (int k = 0; k < channelparamvalue.CalcList.Count; k++)
+                        {
+                            if (channelparamvalue.CalcList[k].Freq == sigfreq && channelparamvalue.CalcList[k].Gear == gear)
+                            {
+                                freqnumber0 = k;
+                                break;
+                            }
+                        }
+                        if (channelparamvalue.CalcList.Count != 0)
+                        {
+                            amplvalue0 = (amplArray0.Sum() * channelparamvalue.CalcList[freqnumber0].CoeffK + channelparamvalue.CalcList[freqnumber0].CoeffB) / 1;
+
+                            if (checkBox5.Checked)
+                            {
+                                amplshow0 = Math.Abs(Meter.MeterReadingValue - amplvalue0) / AC;
+                            }
+                            else if (checkBox4.Checked)
+                            {
+                                amplshow0 = Math.Abs(Meter.MeterReadingValue - amplvalue0) / DC;
+                            }
+                        }
+                        //amplArray0.Clear();
+                    }
+                    try
+                    {
+                        this.Invoke((EventHandler)delegate
+                        {
+
+                            float realAC = dev.CalRealVal(dev.GetGear(0), 0, sigfreq, AdValue0);
+                            float realDC = dev.CalRealVal(dev.GetGear(0), 0, 0, OffsetValue0);
+
+                            textBox1.Text = AdValue0.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
+                            textBox4.Text = OffsetValue0.ToString("0.000") + "\r\n" + realDC.ToString("0.000"); //直流
+                            if (comboBox1.Text == "0")
+                            {
+                                textBox10.Text = (100 * amplshow0).ToString("0.000") + "%";
+                                textBox3.Text = dev.GetGear(0).ToString();
+                                textBox9.Text = Meter.MeterReadingValue.ToString();
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                    finally
+                    {
+                        amplArray0.Clear();
+                    }
+
+
+                }
+
+                else
+                {
+                    try
+                    {
+                        this.Invoke((EventHandler)delegate
+                        {
+                            textBox1.Text = "超时";
+                            textBox4.Text = "超时";
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
             }
         }
         List<float> amplArray1 = new List<float>();
@@ -1392,7 +1376,7 @@ namespace Correct
                 Int16[] adData1 = adBlock.GetAdData(5000);
 
                 if (adData1 != null)
-                {                   
+                {
                     float ampl1 = dsp2.CalAmpl(adData1, (int)sigfreq);
                     offsetValue1 = dsp2.CalAmpl(adData1, 0);
                     AdValue1 = ampl1;
@@ -1406,16 +1390,16 @@ namespace Correct
                             channelid = Convert.ToByte(comboBox1.Text);
                             if (channelid == 1)
                             {
-                                var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;                                
-                                
+                                var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
+
                                 if (mk.Channels[channelid].channeltype.TypeID == 22 || mk.Channels[channelid].channeltype.TypeID == 31 || mk.Channels[channelid].channeltype.TypeID == 32 || mk.Channels[channelid].channeltype.TypeID == 52 || mk.Channels[channelid].channeltype.TypeID == 70 || mk.Channels[channelid].channeltype.TypeID == 71 || mk.Channels[channelid].channeltype.TypeID == 72)
                                 {
                                     AC = (float)(Convert.ToInt32(mk.Channels[channelid].gears[gear].Name) / Math.Sqrt(2));
                                 }
                                 else
-                                    AC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);                                
+                                    AC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
                             }
-                        });  
+                        });
                     }
                     else if (checkBox4.Checked)
                     {
@@ -1429,11 +1413,11 @@ namespace Correct
                                 var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
                                 DC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
                             }
-                        }); 
+                        });
                     }
-                   
+
                     if (amplArray1.Count == 1 && channelid == 1)
-                    {                        
+                    {
                         for (int k = 0; k < channelparamvalue.CalcList.Count; k++)
                         {
                             if (channelparamvalue.CalcList[k].Freq == sigfreq && channelparamvalue.CalcList[k].Gear == gear)
@@ -1442,7 +1426,7 @@ namespace Correct
                                 break;
                             }
                         }
-                       if (channelparamvalue.CalcList.Count != 0)
+                        if (channelparamvalue.CalcList.Count != 0)
                         {
                             amplvalue1 = (amplArray1.Sum() * channelparamvalue.CalcList[freqnumber1].CoeffK + channelparamvalue.CalcList[freqnumber1].CoeffB) / 1;
                             if (checkBox5.Checked)
@@ -1453,7 +1437,7 @@ namespace Correct
                             {
                                 amplshow1 = Math.Abs(Meter.MeterReadingValue - amplvalue1) / DC;
                             }
-                        }                      
+                        }
                         //amplArray1.Clear();
                     }
 
@@ -1461,13 +1445,13 @@ namespace Correct
                     {
                         this.Invoke((EventHandler)delegate
                         {
-                            float realAC = dev.CalRealVal(dev.GetGear(1),1, sigfreq, AdValue1);
-                            float realDC = dev.CalRealVal(dev.GetGear(1),1, 0, offsetValue1);
+                            float realAC = dev.CalRealVal(dev.GetGear(1), 1, sigfreq, AdValue1);
+                            float realDC = dev.CalRealVal(dev.GetGear(1), 1, 0, offsetValue1);
 
                             textBox2.Text = AdValue1.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
                             textBox5.Text = offsetValue1.ToString("0.000") + "\r\n" + realDC.ToString("0.000"); //直流
                             textBox9.Text = Meter.MeterReadingValue.ToString();
-               
+
                             if (comboBox1.Text == "1")
                             {
                                 textBox10.Text = (100 * amplshow1).ToString("0.000") + "%";
@@ -1483,7 +1467,7 @@ namespace Correct
                     {
                         amplArray1.Clear();
                     }
-                    
+
                 }
                 else
                 {
@@ -1495,14 +1479,14 @@ namespace Correct
                             textBox5.Text = "超时";
                         });
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
 
-                    }                    
+                    }
                 }
             }
         }
-        List<float> amplArray2 = new List<float>();        
+        List<float> amplArray2 = new List<float>();
         float amplvalue2;
         float amplshow2;
         int freqnumber2;
@@ -1516,9 +1500,9 @@ namespace Correct
                 byte channelid = 4;
                 float AC = 1f;
                 float DC = 1f;
-                Int16[] adData2 = adBlock.GetAdData(5000);               
+                Int16[] adData2 = adBlock.GetAdData(5000);
                 if (adData2 != null)
-                {                  
+                {
                     float ampl2 = dsp2.CalAmpl(adData2, (int)sigfreq);
                     OffsetValue2 = dsp2.CalAmpl(adData2, 0);
                     AdValue2 = ampl2;
@@ -1539,7 +1523,7 @@ namespace Correct
                                 else
                                     AC = Convert.ToSingle(mk.Channels[channelid - 1].gears[gear].Name);
                             }
-                            else if(channelid == 2)
+                            else if (channelid == 2)
                             {
                                 if (mk.Channels[channelid].channeltype.TypeID == 22 || mk.Channels[channelid].channeltype.TypeID == 31 || mk.Channels[channelid].channeltype.TypeID == 32 || mk.Channels[channelid].channeltype.TypeID == 52 || mk.Channels[channelid].channeltype.TypeID == 70 || mk.Channels[channelid].channeltype.TypeID == 71 || mk.Channels[channelid].channeltype.TypeID == 72)
                                 {
@@ -1547,8 +1531,8 @@ namespace Correct
                                 }
                                 else
                                     AC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
-                            }                        
-                        });  
+                            }
+                        });
                     }
                     else if (checkBox4.Checked)
                     {
@@ -1562,7 +1546,7 @@ namespace Correct
                             {
                                 DC = Convert.ToSingle(mk.Channels[channelid - 1].gears[gear].Name);
                             }
-                            else if(channelid == 2)
+                            else if (channelid == 2)
                             {
                                 DC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
                             }
@@ -1593,7 +1577,7 @@ namespace Correct
                                 }
                             }
                         }
-                        if( channelparamvalue.CalcList.Count != 0)
+                        if (channelparamvalue.CalcList.Count != 0)
                         {
                             amplvalue2 = (amplArray2.Sum() * channelparamvalue.CalcList[freqnumber2].CoeffK + 1 * channelparamvalue.CalcList[freqnumber2].CoeffB) / 1;
                             if (checkBox5.Checked)
@@ -1615,7 +1599,7 @@ namespace Correct
                     //}
                     //Int16 avg = (Int16)(adSum / adData2.Length);
 
-                 
+
                     //for (int i = 0; i < adData2.Length; i++)
                     //{
                     //    adSum = adSum + (adData2[i] - avg) * (adData2[i] - avg);
@@ -1627,20 +1611,20 @@ namespace Correct
                     //float vv = (float)Math.Sqrt(2.0);
 
                     //float AdValue2x = Dft(adData2, sigfreq / 8000, adData2.Length) / vv;
- #endregion
+                    #endregion
 
                     try
                     {
                         this.Invoke((EventHandler)delegate
                         {
 
-                            float realAC = dev.CalRealVal(dev.GetGear(2),2, sigfreq, ampl2);
-                            float realDC = dev.CalRealVal(dev.GetGear(2),2, 0, OffsetValue2);
+                            float realAC = dev.CalRealVal(dev.GetGear(2), 2, sigfreq, ampl2);
+                            float realDC = dev.CalRealVal(dev.GetGear(2), 2, 0, OffsetValue2);
 
                             textBox6.Text = AdValue2.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
                             textBox8.Text = OffsetValue2.ToString("0.000") + "\r\n" + realDC.ToString("0.000"); //直流
                             textBox9.Text = Meter.MeterReadingValue.ToString();
-                        
+
 
                             if (comboBox1.Text == "2")
                             {
@@ -1667,20 +1651,20 @@ namespace Correct
                             textBox6.Text = "超时";
                         });
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                     }
                 }
             }
         }
-       
-         
+
+
 
         #region IRawDataShow 成员
-        Queue<byte[]> rxQueue=new Queue<byte[]>();
+        Queue<byte[]> rxQueue = new Queue<byte[]>();
         public void ShowData(byte[] buf)
         {
-            byte[] tempBuf; 
+            byte[] tempBuf;
             if (buf[0] == 0x15)
             {
                 tempBuf = new byte[6];
@@ -1688,7 +1672,7 @@ namespace Correct
             }
             else
             {
-                 tempBuf = new byte[buf.Length];
+                tempBuf = new byte[buf.Length];
             }
             Array.Copy(buf, tempBuf, tempBuf.Length);
             rxQueue.Enqueue(tempBuf);
@@ -1696,7 +1680,7 @@ namespace Correct
             if (rxQueue.Count > 10)
             {
                 rxQueue.Dequeue();
-            }        
+            }
 
         }
 
@@ -1713,7 +1697,7 @@ namespace Correct
         }
         internal void Meter_AcCurrentSet()
         {
-            meter.SetAcCurrent(); 
+            meter.SetAcCurrent();
         }
         internal void Meter_DcCurrentSet()
         {
@@ -1722,9 +1706,9 @@ namespace Correct
 
         private void 复位_Click(object sender, EventArgs e)//停止执行脚本文件
         {
-            
+
         }
-       
+
 
         public string ReadDeviceInfo(byte[] response)
         {
@@ -1752,7 +1736,7 @@ namespace Correct
             {
                 channelparam.State = 0;
             }
-           
+
             List<byte> channeltypelist = new List<byte>();
             for (int jj = 0; jj < mk.Channels.Count; jj++)
             {
@@ -1765,17 +1749,17 @@ namespace Correct
             }
             if (mk.Channels.Count == 2 && channelid == 2)
             {
-                channelparam.ChannelType = mk.Channels[channelid - 1].channeltype.TypeID;                
+                channelparam.ChannelType = mk.Channels[channelid - 1].channeltype.TypeID;
             }
             else
             {
-                channelparam.ChannelType = mk.Channels[channelid].channeltype.TypeID;              
+                channelparam.ChannelType = mk.Channels[channelid].channeltype.TypeID;
             }
 
             channelparam.Time = DateTime.Now;
             channelparam.Person = user.Name;
 
-           
+
             DeviceRequest req1 = dev.ReadChannelInformation(channelid);
 
             dev.SendRequest(req1);
@@ -1786,18 +1770,18 @@ namespace Correct
                 byte[] response = req1.Response;
                 if (channelparam.ChannelType >= 70)
                 {
-                     param = new ChannelParam(response, 6);
+                    param = new ChannelParam(response, 6);
                 }
                 else
                 {
-                     param = new ChannelParam(response,6,true);
+                    param = new ChannelParam(response, 6, true);
                 }
-                
-               
-                 if (param.CalcList.Count > 0)
+
+
+                if (param.CalcList.Count > 0)
                 {
                     for (int h = 0; h < param.CalcList.Count; h++)
-                    {                      
+                    {
                         channelparam.AddCalcItem(param.CalcList[h]);
                     }
 
@@ -1812,11 +1796,11 @@ namespace Correct
                             if (listDataSource[i].Frequency == channelparam.CalcList[m].Freq && listDataSource[i].Gear == channelparam.CalcList[m].Gear)
                             {
                                 CalcItem item = new CalcItem(listDataSource[i].Frequency, listDataSource[i].Gear, listDataSource[i].CalibrationParameter, listDataSource[i].Offset);
-                                channelparam.ReplaceCalcItem(m,item);
+                                channelparam.ReplaceCalcItem(m, item);
                                 addNewParam = false;
 
                                 break;
-                            }                          
+                            }
                         }
                         if (addNewParam)
                         {
@@ -1870,13 +1854,13 @@ namespace Correct
             }
             if (mk.Channels.Count == 2 && channelid == 2)
             {
-               data.Add(mk.Channels[channelid - 1].channeltype.TypeID);
+                data.Add(mk.Channels[channelid - 1].channeltype.TypeID);
             }
             else
             {
                 data.Add(mk.Channels[channelid].channeltype.TypeID);
             }
-          
+
             //时间            
             data.Add((byte)(DateTime.Now.Year - 2000));
             data.Add((byte)(DateTime.Now.Month));
@@ -1910,8 +1894,8 @@ namespace Correct
             //校准参数
 
             for (int i = 0; i < 21; i++)
-            {                
-                data.AddRange(CalcItem.NULLData);               
+            {
+                data.AddRange(CalcItem.NULLData);
             }
 
             for (int i = 0; i < 2; i++)
@@ -1926,12 +1910,12 @@ namespace Correct
 
 
             data.Add((byte)(crc & 0xff));
-            data.Add((byte)(crc >> 8));            
-        
-            DeviceRequest req = dev.WriteChannelInfo(data.ToArray());          
-           
+            data.Add((byte)(crc >> 8));
+
+            DeviceRequest req = dev.WriteChannelInfo(data.ToArray());
+
             req.Callback += new EventHandler(req_Callback);
-            dev.SendRequest(req);           
+            dev.SendRequest(req);
 
         }
 
@@ -1939,7 +1923,7 @@ namespace Correct
         {
             byte channeltype;
             ChannelParam param;
-            var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;            
+            var mk = this.toolStripComboBox6.SelectedItem as SampleInterface;
             byte channelid = Convert.ToByte(comboBox1.Text);
 
             if (mk.Channels.Count == 2 && channelid == 2)
@@ -1961,13 +1945,13 @@ namespace Correct
 
                 if (channeltype >= 70)
                 {
-                    param = new ChannelParam(response, 6);                 
-                   
+                    param = new ChannelParam(response, 6);
+
                 }
                 else
                 {
-                     param = new ChannelParam(response, 6, true);                  
-                }              
+                    param = new ChannelParam(response, 6, true);
+                }
 
                 using (SaveFileDialog ofd = new SaveFileDialog())
                 {
@@ -1980,7 +1964,7 @@ namespace Correct
                     }
                 }
 
-            }   
+            }
         }
 
         private void button2_Click_1(object sender, EventArgs e)
@@ -2029,33 +2013,33 @@ namespace Correct
                     channelparam.Time = DateTime.Now;
                     channelparam.Person = user.Name;
                     using (FileStream fs = new FileStream(ofd.FileName, FileMode.Open))
-					using (StreamReader sr = new StreamReader(fs))
-                    {                     
+                    using (StreamReader sr = new StreamReader(fs))
+                    {
 
 
                         while (true)
                         {
-                           string line= sr.ReadLine();
-                           if (string.IsNullOrEmpty(line))
-                           {
-                               break;
-                           }
-                           CalcItem calitem = new CalcItem(line);
-                           channelparam.AddCalcItem(calitem);                        
-                         
-                           Record record = new Record((short)calitem.Freq, calitem.Gear, 0, 0, calitem.CoeffK, calitem.CoeffB, 0);
-                           listDataSource.Add(record);
-                         
+                            string line = sr.ReadLine();
+                            if (string.IsNullOrEmpty(line))
+                            {
+                                break;
+                            }
+                            CalcItem calitem = new CalcItem(line);
+                            channelparam.AddCalcItem(calitem);
+
+                            Record record = new Record((short)calitem.Freq, calitem.Gear, 0, 0, calitem.CoeffK, calitem.CoeffB, 0);
+                            listDataSource.Add(record);
+
 
 
 
 
                         }
-                        InitGrid(); 
+                        InitGrid();
 
                     }
 
-                   
+
                     byte[] param2;
                     if (channelparam.ChannelType >= 70)
                     {
@@ -2082,33 +2066,33 @@ namespace Correct
 
         private void button5_Click(object sender, EventArgs e)
         {
-            byte channelid = Convert.ToByte(comboBox1.Text);          
+            byte channelid = Convert.ToByte(comboBox1.Text);
             string content = "";
-            for (int kk = 0; kk < listDataSource.Count;kk++)
+            for (int kk = 0; kk < listDataSource.Count; kk++)
             {
                 content += listDataSource[kk].Frequency + " " + listDataSource[kk].ActualValue1 + " " + listDataSource[kk].Ad1 + " " + listDataSource[kk].ActualValue2 + " " + listDataSource[kk].Ad2 + "\r\n";
 
             }
-                using (SaveFileDialog ofd = new SaveFileDialog())
+            using (SaveFileDialog ofd = new SaveFileDialog())
+            {
+                ofd.Filter = "文本文件(*.txt)|*.txt";
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    ofd.Filter = "文本文件(*.txt)|*.txt";
-                    if (ofd.ShowDialog() == DialogResult.OK)
-                    {
-                        File.WriteAllText(ofd.FileName, content);
+                    File.WriteAllText(ofd.FileName, content);
 
-                        MessageBox.Show("写入完成!");
-                    }
-                }           
+                    MessageBox.Show("写入完成!");
+                }
+            }
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
             if (checkBox2.Checked)
-            {              
+            {
                 Meter_AcCurrentSet();
             }
-            else if(checkBox3.Checked)
-            {              
+            else if (checkBox3.Checked)
+            {
                 Meter_DcCurrentSet();
             }
         }
@@ -2116,11 +2100,11 @@ namespace Correct
         private void button6_Click(object sender, EventArgs e)
         {
             if (checkBox2.Checked)
-            {               
+            {
                 Meter_AcVoltSet();
             }
             else if (checkBox3.Checked)
-            {                
+            {
                 Meter_DcVoltSet();
             }
         }
@@ -2138,6 +2122,23 @@ namespace Correct
             FormWav wav = new FormWav(dev);
             wav.Show();
         }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            byte channelid = Convert.ToByte(comboBox1.Text);
+            byte gear = Convert.ToByte(comboBox3.Text);
+            DeviceRequest req = dev.SetSpan(channelid, gear, 2000);
+            req.Callback += new EventHandler(req_Callback);
+            dev.SendRequest(req);
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            byte channelid = Convert.ToByte(comboBox1.Text);
+            DeviceRequest req = dev.ReadSpan(channelid);
+            req.Callback += new EventHandler(req_ReadSpan);
+            dev.SendRequest(req);
+        }
     }
-        
+
 }

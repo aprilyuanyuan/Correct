@@ -63,12 +63,11 @@
             this.设置时钟ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.读取当前时钟ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.读取上次设置时钟ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSplitButton4 = new System.Windows.Forms.ToolStripSplitButton();
-            this.设置量程ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.读取当前量程ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.label5 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -153,7 +152,7 @@
             this.gridControl1.Location = new System.Drawing.Point(8, 70);
             this.gridControl1.MainView = this.advBandedGridView1;
             this.gridControl1.Name = "gridControl1";
-            this.gridControl1.Size = new System.Drawing.Size(673, 220);
+            this.gridControl1.Size = new System.Drawing.Size(932, 220);
             this.gridControl1.TabIndex = 63;
             this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.advBandedGridView1});
@@ -161,7 +160,7 @@
             // button12
             // 
             this.button12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button12.Location = new System.Drawing.Point(761, 442);
+            this.button12.Location = new System.Drawing.Point(1020, 442);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(111, 21);
             this.button12.TabIndex = 91;
@@ -176,7 +175,7 @@
             this.groupBox2.Controls.Add(this.txtSerialRxData);
             this.groupBox2.Location = new System.Drawing.Point(21, 303);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(507, 277);
+            this.groupBox2.Size = new System.Drawing.Size(766, 277);
             this.groupBox2.TabIndex = 93;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "串口接收";
@@ -188,7 +187,7 @@
             this.txtSerialRxData.Multiline = true;
             this.txtSerialRxData.Name = "txtSerialRxData";
             this.txtSerialRxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSerialRxData.Size = new System.Drawing.Size(501, 257);
+            this.txtSerialRxData.Size = new System.Drawing.Size(760, 257);
             this.txtSerialRxData.TabIndex = 0;
             // 
             // groupBox3
@@ -202,7 +201,7 @@
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.comboBox1);
             this.groupBox3.Controls.Add(this.label1);
-            this.groupBox3.Location = new System.Drawing.Point(781, 79);
+            this.groupBox3.Location = new System.Drawing.Point(1040, 79);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(210, 177);
             this.groupBox3.TabIndex = 121;
@@ -407,34 +406,6 @@
             this.读取上次设置时钟ToolStripMenuItem.Text = "读取上次设置时钟";
             this.读取上次设置时钟ToolStripMenuItem.Click += new System.EventHandler(this.读取上次设置时钟ToolStripMenuItem_Click);
             // 
-            // toolStripSplitButton4
-            // 
-            this.toolStripSplitButton4.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.设置量程ToolStripMenuItem,
-            this.读取当前量程ToolStripMenuItem});
-            this.toolStripSplitButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripSplitButton4.ForeColor = System.Drawing.Color.Black;
-            this.toolStripSplitButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSplitButton4.Image")));
-            this.toolStripSplitButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripSplitButton4.Name = "toolStripSplitButton4";
-            this.toolStripSplitButton4.Size = new System.Drawing.Size(102, 64);
-            this.toolStripSplitButton4.Text = "量程设置";
-            this.toolStripSplitButton4.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            // 
-            // 设置量程ToolStripMenuItem
-            // 
-            this.设置量程ToolStripMenuItem.Name = "设置量程ToolStripMenuItem";
-            this.设置量程ToolStripMenuItem.Size = new System.Drawing.Size(194, 28);
-            this.设置量程ToolStripMenuItem.Text = "设置量程";
-            this.设置量程ToolStripMenuItem.Click += new System.EventHandler(this.设置量程ToolStripMenuItem_Click);
-            // 
-            // 读取当前量程ToolStripMenuItem
-            // 
-            this.读取当前量程ToolStripMenuItem.Name = "读取当前量程ToolStripMenuItem";
-            this.读取当前量程ToolStripMenuItem.Size = new System.Drawing.Size(194, 28);
-            this.读取当前量程ToolStripMenuItem.Text = "读取当前量程";
-            this.读取当前量程ToolStripMenuItem.Click += new System.EventHandler(this.读取当前量程ToolStripMenuItem_Click);
-            // 
             // toolStripButton1
             // 
             this.toolStripButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -467,12 +438,13 @@
             this.toolStripSplitButton1,
             this.toolStripSplitButton3,
             this.toolStripButton2,
-            this.toolStripSplitButton4,
             this.toolStripButton1,
+            this.toolStripButton4,
+            this.toolStripButton5,
             this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1356, 67);
+            this.toolStrip1.Size = new System.Drawing.Size(1615, 67);
             this.toolStrip1.TabIndex = 80;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -486,6 +458,28 @@
             this.toolStripButton2.Text = "写入通道信息";
             this.toolStripButton2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(78, 64);
+            this.toolStripButton4.Text = "设置量程";
+            this.toolStripButton4.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(110, 64);
+            this.toolStripButton5.Text = "读取当前量程";
+            this.toolStripButton5.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // toolStripButton3
             // 
@@ -513,7 +507,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(911, 440);
+            this.button1.Location = new System.Drawing.Point(1170, 440);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 123;
@@ -524,7 +518,7 @@
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(952, 486);
+            this.button2.Location = new System.Drawing.Point(1211, 486);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(183, 56);
             this.button2.TabIndex = 124;
@@ -535,7 +529,7 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(720, 486);
+            this.button3.Location = new System.Drawing.Point(979, 486);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(183, 56);
             this.button3.TabIndex = 124;
@@ -561,7 +555,7 @@
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.groupBox1.Location = new System.Drawing.Point(1035, 87);
+            this.groupBox1.Location = new System.Drawing.Point(1294, 87);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(309, 55);
             this.groupBox1.TabIndex = 127;
@@ -603,7 +597,7 @@
             this.groupBox4.Controls.Add(this.textBox2);
             this.groupBox4.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox4.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.groupBox4.Location = new System.Drawing.Point(1035, 156);
+            this.groupBox4.Location = new System.Drawing.Point(1294, 156);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(309, 56);
             this.groupBox4.TabIndex = 128;
@@ -654,7 +648,7 @@
             this.groupBox5.Controls.Add(this.textBox8);
             this.groupBox5.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox5.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.groupBox5.Location = new System.Drawing.Point(1035, 227);
+            this.groupBox5.Location = new System.Drawing.Point(1294, 227);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(309, 63);
             this.groupBox5.TabIndex = 0;
@@ -702,7 +696,7 @@
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label11.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label11.Location = new System.Drawing.Point(982, 328);
+            this.label11.Location = new System.Drawing.Point(1241, 328);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(148, 12);
             this.label11.TabIndex = 129;
@@ -711,7 +705,7 @@
             // textBox7
             // 
             this.textBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox7.Location = new System.Drawing.Point(1138, 316);
+            this.textBox7.Location = new System.Drawing.Point(1397, 316);
             this.textBox7.Multiline = true;
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(124, 32);
@@ -720,7 +714,7 @@
             // button4
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.Location = new System.Drawing.Point(1269, 325);
+            this.button4.Location = new System.Drawing.Point(1528, 325);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 131;
@@ -741,7 +735,7 @@
             // button5
             // 
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.Location = new System.Drawing.Point(1191, 486);
+            this.button5.Location = new System.Drawing.Point(1450, 486);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(116, 56);
             this.button5.TabIndex = 139;
@@ -796,7 +790,7 @@
             this.groupBox6.Controls.Add(this.button7);
             this.groupBox6.Controls.Add(this.checkBox3);
             this.groupBox6.Controls.Add(this.button6);
-            this.groupBox6.Location = new System.Drawing.Point(555, 318);
+            this.groupBox6.Location = new System.Drawing.Point(814, 318);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(200, 117);
             this.groupBox6.TabIndex = 144;
@@ -819,7 +813,7 @@
             this.groupBox7.Controls.Add(this.textBox10);
             this.groupBox7.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox7.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.groupBox7.Location = new System.Drawing.Point(1035, 388);
+            this.groupBox7.Location = new System.Drawing.Point(1294, 388);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(210, 89);
             this.groupBox7.TabIndex = 146;
@@ -858,7 +852,7 @@
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(796, 282);
+            this.checkBox1.Location = new System.Drawing.Point(1055, 282);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(96, 16);
             this.checkBox1.TabIndex = 148;
@@ -868,7 +862,7 @@
             // textBox9
             // 
             this.textBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox9.Location = new System.Drawing.Point(593, 483);
+            this.textBox9.Location = new System.Drawing.Point(852, 483);
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(100, 21);
             this.textBox9.TabIndex = 149;
@@ -877,7 +871,7 @@
             // 
             this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(534, 486);
+            this.label15.Location = new System.Drawing.Point(793, 486);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(53, 12);
             this.label15.TabIndex = 150;
@@ -886,7 +880,7 @@
             // button8
             // 
             this.button8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button8.Location = new System.Drawing.Point(781, 328);
+            this.button8.Location = new System.Drawing.Point(1040, 328);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(146, 60);
             this.button8.TabIndex = 151;
@@ -898,7 +892,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1356, 606);
+            this.ClientSize = new System.Drawing.Size(1615, 606);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.textBox9);
@@ -985,9 +979,6 @@
         private System.Windows.Forms.ToolStripMenuItem 设置时钟ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 读取当前时钟ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 读取上次设置时钟ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSplitButton toolStripSplitButton4;
-        private System.Windows.Forms.ToolStripMenuItem 设置量程ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 读取当前量程ToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
@@ -1032,6 +1023,8 @@
         private System.Windows.Forms.TextBox textBox9;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
     }
 }
 

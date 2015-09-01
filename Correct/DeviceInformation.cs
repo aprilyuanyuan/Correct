@@ -38,7 +38,8 @@ namespace Correct
         }
 
         public string InitDeviceInformation(byte[] response)
-        {         
+        {
+            
             string Deviceflag = response[6].ToString() + "\r\n";
             string devicename = DeviceName[response[6] - 1] + "\r\n";
             
@@ -57,8 +58,10 @@ namespace Correct
             byte productionsequencelength = response[26];
             string productionsequencename = Encoding.Default.GetString(response, 27, productionsequencelength) + "\r\n";
 
+           
             byte devicetypelength = response[27 + productionsequencelength];
             string devicetype = Encoding.Default.GetString(response, 28 + productionsequencelength, devicetypelength) + "\r\n";
+           
 
             
            
