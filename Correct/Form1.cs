@@ -1233,6 +1233,10 @@ namespace Correct
         }
 
         List<float> amplArray0 = new List<float>();
+        List<float> JLArray0 = new List<float>();
+        List<float> ZLArray0 = new List<float>();
+        float JLValue0;
+        float ZLValue0;
         float value0;
         float amplvalue0;
         float amplshow0;
@@ -1254,9 +1258,12 @@ namespace Correct
                     float ampl0 = dsp2.CalAmpl(adData0, (int)sigfreq);
                     OffsetValue0 = dsp2.CalAmpl(adData0, 0);
                     AdValue0 = ampl0;
+                    JLArray0.Add(AdValue0);
+                    ZLArray0.Add(OffsetValue0);
+
                     if (checkBox5.Checked)
                     {
-                        amplArray0.Add(ampl0);
+                        amplArray0.Add(ampl0);                       
                         this.Invoke((EventHandler)delegate
                         {
                             gear = Convert.ToByte(textBox3.Text);
@@ -1278,6 +1285,7 @@ namespace Correct
                     else if (checkBox4.Checked)
                     {
                         amplArray0.Add(OffsetValue0);
+                        
                         this.Invoke((EventHandler)delegate
                         {
                             gear = Convert.ToByte(textBox3.Text);
@@ -1288,6 +1296,16 @@ namespace Correct
                                 DC = Convert.ToSingle(mk.Channels[channelid].gears[gear].Name);
                             }
                         });
+                    }
+                    if (JLArray0.Count == 5)
+                    {
+                        JLValue0 = JLArray0.Sum() / 5;
+                        JLArray0.Clear();
+                    }
+                    if(ZLArray0.Count == 5)
+                    {
+                        ZLValue0 = ZLArray0.Sum() / 5;
+                        ZLArray0.Clear();
                     }
                     if (amplArray0.Count == 1 && channelid == 0)
                     {
@@ -1324,6 +1342,8 @@ namespace Correct
 
                             textBox1.Text = AdValue0.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
                             textBox4.Text = OffsetValue0.ToString("0.000") + "\r\n" + realDC.ToString("0.000"); //直流
+                            textBox11.Text = JLValue0.ToString("0.000");
+                            textBox14.Text = ZLValue0.ToString("0.000");
                             if (comboBox1.Text == "0")
                             {
                                 textBox10.Text = (100 * amplshow0).ToString("0.000") + "%";
@@ -1360,6 +1380,10 @@ namespace Correct
             }
         }
         List<float> amplArray1 = new List<float>();
+        List<float> JLArray1 = new List<float>();
+        List<float> ZLArray1 = new List<float>();
+        float JLValue1;
+        float ZLValue1;
         float amplvalue1;
         float amplshow1;
         int freqnumber1;
@@ -1380,7 +1404,8 @@ namespace Correct
                     float ampl1 = dsp2.CalAmpl(adData1, (int)sigfreq);
                     offsetValue1 = dsp2.CalAmpl(adData1, 0);
                     AdValue1 = ampl1;
-
+                    JLArray1.Add(AdValue1);
+                    ZLArray1.Add(offsetValue1);
                     if (checkBox5.Checked)
                     {
                         amplArray1.Add(ampl1);
@@ -1440,6 +1465,16 @@ namespace Correct
                         }
                         //amplArray1.Clear();
                     }
+                    if (JLArray1.Count == 5)
+                    {
+                        JLValue1 = JLArray1.Sum() / 5;
+                        JLArray1.Clear();
+                    }
+                    if (ZLArray1.Count == 5)
+                    {
+                        ZLValue1 = ZLArray1.Sum() / 5;
+                        ZLArray1.Clear();
+                    }
 
                     try
                     {
@@ -1447,7 +1482,8 @@ namespace Correct
                         {
                             float realAC = dev.CalRealVal(dev.GetGear(1), 1, sigfreq, AdValue1);
                             float realDC = dev.CalRealVal(dev.GetGear(1), 1, 0, offsetValue1);
-
+                            textBox12.Text = JLValue1.ToString("0.000");
+                            textBox15.Text = ZLValue1.ToString("0.000");
                             textBox2.Text = AdValue1.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
                             textBox5.Text = offsetValue1.ToString("0.000") + "\r\n" + realDC.ToString("0.000"); //直流
                             textBox9.Text = Meter.MeterReadingValue.ToString();
@@ -1487,6 +1523,11 @@ namespace Correct
             }
         }
         List<float> amplArray2 = new List<float>();
+        List<float> JLArray2 = new List<float>();
+        List<float> ZLArray2 = new List<float>();
+        float JLValue2;
+        float ZLValue2;
+         
         float amplvalue2;
         float amplshow2;
         int freqnumber2;
@@ -1506,6 +1547,8 @@ namespace Correct
                     float ampl2 = dsp2.CalAmpl(adData2, (int)sigfreq);
                     OffsetValue2 = dsp2.CalAmpl(adData2, 0);
                     AdValue2 = ampl2;
+                    JLArray2.Add(AdValue2);
+                    ZLArray2.Add(OffsetValue2);
                     if (checkBox5.Checked)
                     {
                         amplArray2.Add(ampl2);
@@ -1591,6 +1634,16 @@ namespace Correct
                         }
                         //amplArray2.Clear();
                     }
+                    if (JLArray2.Count == 5)
+                    {
+                        JLValue2 = JLArray2.Sum() / 5;
+                        JLArray2.Clear();
+                    }
+                    if (ZLArray2.Count == 5)
+                    {
+                        ZLValue2 = ZLArray2.Sum() / 5;
+                        ZLArray2.Clear();
+                    }
                     #region
                     //double adSum = 0;
                     //for (int i = 0; i < adData2.Length; i++)
@@ -1620,7 +1673,8 @@ namespace Correct
 
                             float realAC = dev.CalRealVal(dev.GetGear(2), 2, sigfreq, ampl2);
                             float realDC = dev.CalRealVal(dev.GetGear(2), 2, 0, OffsetValue2);
-
+                            textBox13.Text = JLValue2.ToString("0.000");
+                            textBox16.Text = ZLValue2.ToString("0.000");
                             textBox6.Text = AdValue2.ToString("0.000") + "\r\n" + realAC.ToString("0.000"); //交流 
                             textBox8.Text = OffsetValue2.ToString("0.000") + "\r\n" + realDC.ToString("0.000"); //直流
                             textBox9.Text = Meter.MeterReadingValue.ToString();
