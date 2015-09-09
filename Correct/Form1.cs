@@ -1233,8 +1233,8 @@ namespace Correct
         }
 
         List<float> amplArray0 = new List<float>();
-        List<float> JLArray0 = new List<float>();
-        List<float> ZLArray0 = new List<float>();
+        Queue<float> JLArray0 = new Queue<float>();
+        Queue<float> ZLArray0 = new Queue<float>();
         float JLValue0;
         float ZLValue0;
         float value0;
@@ -1258,8 +1258,8 @@ namespace Correct
                     float ampl0 = dsp2.CalAmpl(adData0, (int)sigfreq);
                     OffsetValue0 = dsp2.CalAmpl(adData0, 0);
                     AdValue0 = ampl0;
-                    JLArray0.Add(AdValue0);
-                    ZLArray0.Add(OffsetValue0);
+                    JLArray0.Enqueue(AdValue0);
+                    ZLArray0.Enqueue(OffsetValue0);
 
                     if (checkBox5.Checked)
                     {
@@ -1300,12 +1300,12 @@ namespace Correct
                     if (JLArray0.Count == 5)
                     {
                         JLValue0 = JLArray0.Sum() / 5;
-                        JLArray0.Clear();
+                        JLArray0.Dequeue();
                     }
                     if(ZLArray0.Count == 5)
                     {
                         ZLValue0 = ZLArray0.Sum() / 5;
-                        ZLArray0.Clear();
+                        ZLArray0.Dequeue();
                     }
                     if (amplArray0.Count == 1 && channelid == 0)
                     {
@@ -1380,8 +1380,8 @@ namespace Correct
             }
         }
         List<float> amplArray1 = new List<float>();
-        List<float> JLArray1 = new List<float>();
-        List<float> ZLArray1 = new List<float>();
+        Queue<float> JLArray1 = new Queue<float>();
+        Queue<float> ZLArray1 = new Queue<float>();
         float JLValue1;
         float ZLValue1;
         float amplvalue1;
@@ -1404,8 +1404,8 @@ namespace Correct
                     float ampl1 = dsp2.CalAmpl(adData1, (int)sigfreq);
                     offsetValue1 = dsp2.CalAmpl(adData1, 0);
                     AdValue1 = ampl1;
-                    JLArray1.Add(AdValue1);
-                    ZLArray1.Add(offsetValue1);
+                    JLArray1.Enqueue(AdValue1);
+                    ZLArray1.Enqueue(offsetValue1);
                     if (checkBox5.Checked)
                     {
                         amplArray1.Add(ampl1);
@@ -1468,12 +1468,12 @@ namespace Correct
                     if (JLArray1.Count == 5)
                     {
                         JLValue1 = JLArray1.Sum() / 5;
-                        JLArray1.Clear();
+                        JLArray1.Dequeue();
                     }
                     if (ZLArray1.Count == 5)
                     {
                         ZLValue1 = ZLArray1.Sum() / 5;
-                        ZLArray1.Clear();
+                        ZLArray1.Dequeue();
                     }
 
                     try
@@ -1523,8 +1523,8 @@ namespace Correct
             }
         }
         List<float> amplArray2 = new List<float>();
-        List<float> JLArray2 = new List<float>();
-        List<float> ZLArray2 = new List<float>();
+        Queue<float> JLArray2 = new Queue<float>();
+        Queue<float> ZLArray2 = new Queue<float>();
         float JLValue2;
         float ZLValue2;
          
@@ -1547,8 +1547,8 @@ namespace Correct
                     float ampl2 = dsp2.CalAmpl(adData2, (int)sigfreq);
                     OffsetValue2 = dsp2.CalAmpl(adData2, 0);
                     AdValue2 = ampl2;
-                    JLArray2.Add(AdValue2);
-                    ZLArray2.Add(OffsetValue2);
+                    JLArray2.Enqueue(AdValue2);
+                    ZLArray2.Enqueue(OffsetValue2);
                     if (checkBox5.Checked)
                     {
                         amplArray2.Add(ampl2);
@@ -1637,12 +1637,12 @@ namespace Correct
                     if (JLArray2.Count == 5)
                     {
                         JLValue2 = JLArray2.Sum() / 5;
-                        JLArray2.Clear();
+                        JLArray2.Dequeue();
                     }
                     if (ZLArray2.Count == 5)
                     {
                         ZLValue2 = ZLArray2.Sum() / 5;
-                        ZLArray2.Clear();
+                        ZLArray2.Dequeue();
                     }
                     #region
                     //double adSum = 0;
