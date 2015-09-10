@@ -21,15 +21,30 @@ namespace Correct
         }
 
 
-        public float CalAmpl(Int16[] data, int freq)
+        public float CalAmpl(Int16[] data, int freq,out int mainFreq)
         {
             float ampl = 0;
+            mainFreq = 0;
             for (int i = 0; i < data.Length; i++)
             {
                 dataIn[2 * i] = data[i];
                 dataIn[2 * i + 1] = 0;
             }
             plan.FFTForward(dataIn, dataOut);
+
+
+            float maxAmpl = 0;
+            
+
+            for (int i = 5; i < this.FFTNUM / 2; i++)
+            {
+                float tmpAmpl = (dataOut[2 * i] * dataOut[2 * i] + dataOut[2 * i + 1] * dataOut[2 * i + 1]);
+                if (tmpAmpl > maxAmpl)
+                {
+                    maxAmpl = tmpAmpl;
+                    mainFreq = i;
+                }
+            }
 
             int startIndex = freq ;
             int endIndex = freq;

@@ -25,6 +25,8 @@ namespace Correct
     //public delegate void gridView_EndSorting(object sender, EventArgs e);
     public partial class Form1 : Form, IRawDataShow
     {
+
+        bool autoCalFreq = false;
         public const int AckTimeOut = 3000;
         Device dev = new Device();
         Thread threadReadMeter = null;
@@ -715,6 +717,9 @@ namespace Correct
                 }
                 else
                 {
+                    checkBox6.Checked = false;
+                    autoCalFreq = false;
+                    checkBox6.Enabled = false;
                     string path = ofd.FileName;
                     this.button12.Text = "停止脚本";
                     String[] lines = File.ReadAllLines(path, Encoding.Default);
@@ -742,6 +747,7 @@ namespace Correct
             else
             {
                 _runThread.Abort();
+                checkBox6.Enabled = true;
                 this.button12.Text = "运行脚本";
                 label5.Text = "";
             }
@@ -1245,6 +1251,7 @@ namespace Correct
         {
             ADBlock adBlock = dev.GetADBlock(0); //通道0          
 
+            int mainFreq = 0;
             while (true)
             {
                 int gear = 0;
@@ -1255,8 +1262,19 @@ namespace Correct
 
                 if (adData0 != null)
                 {
-                    float ampl0 = dsp2.CalAmpl(adData0, (int)sigfreq);
-                    OffsetValue0 = dsp2.CalAmpl(adData0, 0);
+                    float ampl0 = dsp2.CalAmpl(adData0, (int)sigfreq,out mainFreq);
+
+                    if ((selChannel == 0) && autoCalFreq)
+                    {
+                        this.Invoke((EventHandler)delegate
+                        {
+                            textBox7.Text = mainFreq.ToString();
+                            sigfreq = mainFreq;
+                        });
+                    }
+
+                  
+                    OffsetValue0 = dsp2.CalAmpl(adData0, 0, out mainFreq);
                     AdValue0 = ampl0;
                     JLArray0.Enqueue(AdValue0);
                     ZLArray0.Enqueue(OffsetValue0);
@@ -1390,7 +1408,7 @@ namespace Correct
         public void DealData1()
         {
             ADBlock adBlock = dev.GetADBlock(1); //通道1          
-
+            int mainFreq = 0;
             while (true)
             {
                 int gear = 0;
@@ -1401,8 +1419,17 @@ namespace Correct
 
                 if (adData1 != null)
                 {
-                    float ampl1 = dsp2.CalAmpl(adData1, (int)sigfreq);
-                    offsetValue1 = dsp2.CalAmpl(adData1, 0);
+                    float ampl1 = dsp2.CalAmpl(adData1, (int)sigfreq, out mainFreq);
+                    if ((selChannel == 1) && autoCalFreq)
+                    {
+                        this.Invoke((EventHandler)delegate
+                        {
+                            textBox7.Text = mainFreq.ToString();
+                            sigfreq = mainFreq;
+                        });
+                    }
+
+                    offsetValue1 = dsp2.CalAmpl(adData1, 0, out mainFreq);
                     AdValue1 = ampl1;
                     JLArray1.Enqueue(AdValue1);
                     ZLArray1.Enqueue(offsetValue1);
@@ -1535,7 +1562,7 @@ namespace Correct
         {
             int gear = 0;
             ADBlock adBlock = dev.GetADBlock(2); //通道2         
-
+            int mainFreq = 0;
             while (true)
             {
                 byte channelid = 4;
@@ -1544,8 +1571,16 @@ namespace Correct
                 Int16[] adData2 = adBlock.GetAdData(5000);
                 if (adData2 != null)
                 {
-                    float ampl2 = dsp2.CalAmpl(adData2, (int)sigfreq);
-                    OffsetValue2 = dsp2.CalAmpl(adData2, 0);
+                    float ampl2 = dsp2.CalAmpl(adData2, (int)sigfreq, out mainFreq);
+                    if ((selChannel == 2) && autoCalFreq)
+                    {
+                        this.Invoke((EventHandler)delegate
+                        {
+                            textBox7.Text = mainFreq.ToString();
+                            sigfreq = mainFreq;
+                        });
+                    }
+                    OffsetValue2 = dsp2.CalAmpl(adData2, 0, out mainFreq);
                     AdValue2 = ampl2;
                     JLArray2.Enqueue(AdValue2);
                     ZLArray2.Enqueue(OffsetValue2);
@@ -2192,6 +2227,18 @@ namespace Correct
             DeviceRequest req = dev.ReadSpan(channelid);
             req.Callback += new EventHandler(req_ReadSpan);
             dev.SendRequest(req);
+        }
+
+        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        {
+            this.autoCalFreq = checkBox6.Checked;
+        }
+
+
+        int selChannel = 0;
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selChannel = int.Parse(comboBox1.Text);
         }
     }
 
