@@ -157,6 +157,7 @@ namespace Correct
             for (int i = 0; i < 3; i++)
             {
                 listChannel.Add(new ChannelParam());
+                listFiltes.Add(new Filter());
             }
 
 
@@ -415,6 +416,17 @@ namespace Correct
         }
 
 
+        List<Filter> listFiltes = new List<Filter>();
+
+        public void SetFilter(int index)
+        {
+            foreach (Filter filter in listFiltes)
+            {
+                filter.SetFilterIndex(index);
+            }
+        }
+
+
         private void ReceiveData()
         {
             byte[] buffer = new byte[128 * 1024 * 2];
@@ -599,10 +611,11 @@ namespace Correct
 
                                                List<Int16> listAd = new List<Int16>();
 
-                                               for (int j = 0; j < adLen/2; j++)
+                                               for (int j = 0; j < adLen / 2; j++)
                                                {
-                                                   Int16 adVal = (Int16)(frameBuffer[j*2+11] +( (frameBuffer[j*2 + 12]&0x0F)<<8));
-                                                   listAd.Add(adVal);
+                                                   Int16 adVal = (Int16)(frameBuffer[j * 2 + 11] + ((frameBuffer[j * 2 + 12] & 0x0F) << 8));
+                                                   Int16 fAD = (Int16)listFiltes[channel].DoFilter(adVal);
+                                                   listAd.Add(fAD);
                                                }
                                                Int16[] adArray=listAd.ToArray();
                                                listBlock[channel].PutAdData(adArray, 0, adArray.Length);

@@ -102,6 +102,8 @@ namespace Correct
             paCal = new PACal(sigSource, meter);
 
             paCal.LoadCfg(Path.Combine(Application.StartupPath, "PACAL.txt"));
+
+          
         }
 
 
@@ -314,6 +316,8 @@ namespace Correct
                 this.toolStripComboBox6.Items.Add(module);
             }
             toolStripComboBox6.SelectedItem = sampleInterfaces[0];
+
+            comboBox4.SelectedIndex = 0;
         }
 
         private void ComboBoxMethod()
@@ -2239,6 +2243,11 @@ namespace Correct
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             selChannel = int.Parse(comboBox1.Text);
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dev.SetFilter(comboBox4.SelectedIndex-1);
         }
     }
 
